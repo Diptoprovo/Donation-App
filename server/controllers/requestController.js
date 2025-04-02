@@ -2,19 +2,22 @@ import Request from '../models/requestModel.js';
 import Receiver from '../models/receiverModel.js';
 import Item from '../models/itemModel.js';
 import { notifyItemMatch } from '../utils/notificationUtils.js';
+import { notifyDonationRequest } from '../utils/notificationUtils.js';
+import { sendDonationMatchEmail } from '../utils/emailUtils.js';
 
-// Create a new request
+// Create a new request (general request without specific item)
 export const createRequest = async (req, res) => {
     try {
         const { name, category, location } = req.body;
         const receiverId = req.userId;
         
-        // Create new request
+        // Create new request (general request without specific item)
         const request = await Request.create({
             name,
             category,
             location,
-            receiverId
+            receiverId,
+            status: 'pending'
         });
         
         // Add request to receiver's request list
@@ -29,14 +32,31 @@ export const createRequest = async (req, res) => {
             location: location
         }).populate('donorId', 'name email');
         
-        // Return matched items with the response
+        // Notify matching donors if items are found
+        if (matchingItems.length > 0) {
+            // Get receiver details for notification
+            const receiver = await Receiver.findById(receiverId);
+            
+            // Return matched items with the response
+            return res.status(201).json({
+                success: true,
+                message: 'General request created successfully and matching items found',
+                request,
+                matchingItems: {
+                    count: matchingItems.length,
+                    items: matchingItems
+                }
+            });
+        }
+        
+        // No matching items found
         res.status(201).json({
             success: true,
-            message: 'Request created successfully',
+            message: 'General request created successfully but no matching items found',
             request,
             matchingItems: {
-                count: matchingItems.length,
-                items: matchingItems
+                count: 0,
+                items: []
             }
         });
     } catch (error) {
@@ -225,12 +245,13 @@ export const deleteRequest = async (req, res) => {
     }
 };
 
+
 export default {
     createRequest,
     getAllRequests,
     getReceiverRequests,
     getRequestById,
     updateRequest,
-    deleteRequest
+    deleteRequest,
 }; 
  

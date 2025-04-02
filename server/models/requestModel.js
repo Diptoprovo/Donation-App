@@ -22,6 +22,20 @@ const requestSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Receiver',
         required: true
+    },
+    itemId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Item',
+        // Not required for general requests without a specific item
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 

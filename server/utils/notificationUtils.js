@@ -55,10 +55,20 @@ export const notifyItemMatch = async (req, receiverId, itemName, category) => {
     return await createNotification(req, receiverId, title, message, type);
 };
 
+// Send notification for new item matching request
+export const notifyNewItemForRequest = async (req, receiverId, itemName, donorName) => {
+    const title = 'New Item Available for Your Request';
+    const message = `${donorName} has added a new item "${itemName}" that matches your request`;
+    const type = 'item_match';
+    
+    return await createNotification(req, receiverId, title, message, type);
+};
+
 export default {
     createNotification,
     notifyDonationRequest,
     notifyRequestAccepted,
     notifyDonationDelivery,
-    notifyItemMatch
+    notifyItemMatch,
+    notifyNewItemForRequest
 }; 

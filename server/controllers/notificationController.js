@@ -23,7 +23,7 @@ const notificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['donation_request', 'request_accepted', 'donation_delivered', 'item_match'],
+        enum: ['donation_request', 'request_accepted', 'donation_delivered', 'item_match', 'request_rejected'],
         required: true
     },
     isRead: {

@@ -2,7 +2,7 @@ import Item from '../models/itemModel.js';
 import Donor from '../models/donorModel.js';
 import Request from '../models/requestModel.js';
 import Receiver from '../models/receiverModel.js';
-import { notifyItemMatch } from '../utils/notificationUtils.js';
+import { notifyItemMatch, notifyNewItemForRequest } from '../utils/notificationUtils.js';
 
 // Create a new donation item
 export const createItem = async (req, res) => {
@@ -38,20 +38,40 @@ export const createItem = async (req, res) => {
             location: location
         }).populate('receiverId');
         
-        // Send notifications to matching receivers
-        for (const request of matchingRequests) {
-            await notifyItemMatch(
-                req,
-                request.receiverId._id,
-                item.name,
-                item.category
-            );
+        let hasMatchingRequests = false;
+        
+        // If matching requests found, send notifications to receivers
+        if (matchingRequests.length > 0) {
+            hasMatchingRequests = true;
+            
+            // Get donor details
+            const donor = await Donor.findById(donorId);
+            
+            // Send notifications to matching receivers
+            for (const request of matchingRequests) {
+                // Notify the receiver that a matching item is available
+                await notifyItemMatch(
+                    req,
+                    request.receiverId._id,
+                    item.name,
+                    item.category
+                );
+                
+                
+            }
         }
         
         res.status(201).json({
             success: true,
-            message: 'Item added successfully',
-            item
+            message: hasMatchingRequests 
+                ? 'Item added successfully and matching requests found'
+                : 'Item added successfully',
+            item,
+            matchingRequests: {
+                count: matchingRequests.length,
+                requests: matchingRequests
+            },
+            hasMatchingRequests
         });
     } catch (error) {
         res.status(500).json({
@@ -249,45 +269,45 @@ export const deleteItem = async (req, res) => {
 };
 
 // Get items matching receiver's requests
-export const getMatchingItems = async (req, res) => {
-    try {
-        const receiverId = req.userId;
+// export const getMatchingItems = async (req, res) => {
+//     try {
+//         const receiverId = req.userId;
         
-        // Get receiver's requests
-        const receiver = await Receiver.findById(receiverId).populate('requestList');
+//         // Get receiver's requests
+//         const receiver = await Receiver.findById(receiverId).populate('requestList');
         
-        if (!receiver.requestList || receiver.requestList.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No requests found to match',
-                items: []
-            });
-        }
+//         if (!receiver.requestList || receiver.requestList.length === 0) {
+//             return res.status(200).json({
+//                 success: true,
+//                 message: 'No requests found to match',
+//                 items: []
+//             });
+//         }
         
-        // Extract categories and locations from requests
-        const requestFilters = receiver.requestList.map(request => ({
-            category: request.category,
-            location: request.location
-        }));
+//         // Extract categories and locations from requests
+//         const requestFilters = receiver.requestList.map(request => ({
+//             category: request.category,
+//             location: request.location
+//         }));
         
-        // Find items matching any request criteria
-        const matchingItems = await Item.find({
-            $or: requestFilters
-        }).populate('donorId', 'name email');
+//         // Find items matching any request criteria
+//         const matchingItems = await Item.find({
+//             $or: requestFilters
+//         }).populate('donorId', 'name email');
         
-        res.status(200).json({
-            success: true,
-            count: matchingItems.length,
-            items: matchingItems
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get matching items',
-            error: error.message
-        });
-    }
-};
+//         res.status(200).json({
+//             success: true,
+//             count: matchingItems.length,
+//             items: matchingItems
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: 'Failed to get matching items',
+//             error: error.message
+//         });
+//     }
+// };
 
 export default {
     createItem,
@@ -296,5 +316,5 @@ export default {
     getDonorItems,
     updateItem,
     deleteItem,
-    getMatchingItems
+    // getMatchingItems
 }; 
