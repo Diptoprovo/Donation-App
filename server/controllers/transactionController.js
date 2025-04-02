@@ -7,77 +7,76 @@ import { sendDonationMatchEmail, sendRequestAcceptedEmail } from '../utils/email
 import Request from '../models/requestModel.js';
 
 // Request an item (receiver initiates a request to the donor, not an immediate transaction)
-// export const requestItem = async (req, res) => {
-//     try {
-//         const { itemId } = req.body;
-//         const receiverId = req.userId;
+export const requestItem = async (req, res) => {
+    try {
+        const { itemId } = req.body;
+        const receiverId = req.userId;
 
-//         // Get the item details
-//         const item = await Item.findById(itemId).populate('donorId');
+        // Get the item details
+        const item = await Item.findById(itemId).populate('donorId');
 
-//         if (!item) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Item not found'
-//             });
-//         }
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: 'Item not found'
+            });
+        }
 
-//         // Check if a pending request already exists for this item and receiver
-//         const existingRequest = await Request.findOne({
-//             receiverId,
-//             category: item.category,
-//             location: item.location,
-//             itemId // Add itemId field to track specific item requested
-//         });
+        // Check if a pending request already exists for this item and receiver
+        const existingRequest = await Request.findOne({
+            receiverId,
+            itemId,
+            status: 'pending'
+        });
 
-//         if (existingRequest) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'You have already requested this item',
-//                 request: existingRequest
-//             });
-//         }
+        if (existingRequest) {
+            return res.status(400).json({
+                success: false,
+                message: 'You have already requested this item',
+                request: existingRequest
+            });
+        }
 
-//         // Get receiver details for notification
-//         const receiver = await Receiver.findById(receiverId);
+        // Get receiver details for notification
+        const receiver = await Receiver.findById(receiverId);
 
-//         // Create a new request specifically for this item
-//         const request = await Request.create({
-//             name: item.name,
-//             category: item.category,
-//             location: item.location,
-//             receiverId,
-//             itemId // Add itemId to link request to specific item
-//         });
+        // Create a new request specifically for this item
+        const request = await Request.create({
+            name: item.name,
+            category: item.category,
+            location: item.location,
+            receiverId,
+            itemId,
+            status: 'pending'
+        });
 
-//         // Add request to receiver's request list
-//         await Receiver.findByIdAndUpdate(
-//             receiverId,
-//             { $push: { requestList: request._id } }
-//         );
+        // Add request to receiver's request list
+        await Receiver.findByIdAndUpdate(
+            receiverId,
+            { $push: { requestList: request._id } }
+        );
 
-//         // Send notification to donor
-//         await notifyDonationRequest(
-//             req,
-//             item.donorId._id,
-//             item.name,
-//             receiver.name
-//         );
+        // Send notification to donor
+        await notifyDonationRequest(
+            req,
+            item.donorId._id,
+            item.name,
+            receiver.name
+        );
 
-
-//         res.status(201).json({
-//             success: true,
-//             message: 'Item requested successfully. Waiting for donor approval.',
-//             request
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             success: false,
-//             message: 'Failed to request item',
-//             error: error.message
-//         });
-//     }
-// };
+        res.status(201).json({
+            success: true,
+            message: 'Item requested successfully. Waiting for donor approval.',
+            request
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to request item',
+            error: error.message
+        });
+    }
+};
 
 // Donor initiates a donation for a specific request
 export const initiateItemDonation = async (req, res) => {
@@ -177,7 +176,7 @@ export const initiateItemDonation = async (req, res) => {
 export const approveRequest = async (req, res) => {
     try {
         const { requestId } = req.params;
-        const { deliveryDate, itemId } = req.body; // itemId is required for generic requests
+        const { deliveryDate, itemId } = req.body; 
         const donorId = req.userId;
 
         // Find the request
@@ -214,39 +213,11 @@ export const approveRequest = async (req, res) => {
         }
         // If it's a generic request without a specific itemId
         else {
-            // Validate that an itemId was provided for the generic request
-            if (!itemId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'For generic requests, you must specify which item to donate'
-                });
-            }
-
-            // Find the item specified by the donor
-            selectedItem = await Item.findById(itemId);
-
-            if (!selectedItem) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Item not found'
-                });
-            }
-
-            // Check if the item belongs to the donor
-            if (selectedItem.donorId.toString() !== donorId) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'Access denied. Not the owner of the item'
-                });
-            }
-
-            // Check that the item matches the request category and location
-            if (selectedItem.category !== request.category || selectedItem.location !== request.location) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Item category or location does not match the request'
-                });
-            }
+            return res.status(400).json({
+                success: false,
+                message: 'For specific requests, you must specify itemid'
+            });
+            
         }
 
         // Update request status to approved
@@ -310,78 +281,78 @@ export const approveRequest = async (req, res) => {
 };
 
 // // Donor rejects a specific request
-// export const rejectRequest = async (req, res) => {
-//     try {
-//         const { requestId } = req.params;
-//         const donorId = req.userId;
+export const rejectRequest = async (req, res) => {
+    try {
+        const { requestId } = req.params;
+        const donorId = req.userId;
 
-//         // Find the request
-//         const request = await Request.findById(requestId).populate('receiverId').populate('itemId');
+        // Find the request
+        const request = await Request.findById(requestId).populate('receiverId').populate('itemId');
 
-//         if (!request) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Request not found'
-//             });
-//         }
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: 'Request not found'
+            });
+        }
 
-//         // If request doesn't have an itemId (it's a generic request)
-//         if (!request.itemId) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'This is a generic request without a specific item'
-//             });
-//         }
+        // If request doesn't have an itemId (it's a generic request)
+        if (!request.itemId) {
+            return res.status(400).json({
+                success: false,
+                message: 'This is a generic request without a specific item'
+            });
+        }
 
-//         // Check if the item belongs to the donor
-//         const item = await Item.findById(request.itemId);
+        // Check if the item belongs to the donor
+        const item = await Item.findById(request.itemId);
 
-//         if (!item) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Item not found'
-//             });
-//         }
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: 'Item not found'
+            });
+        }
 
-//         if (item.donorId.toString() !== donorId) {
-//             return res.status(403).json({
-//                 success: false,
-//                 message: 'Access denied. Not the owner of the item'
-//             });
-//         }
+        if (item.donorId.toString() !== donorId) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Not the owner of the item'
+            });
+        }
 
-//         // Update request status to rejected
-//         request.status = 'rejected';
-//         await request.save();
+        // Update request status to rejected
+        request.status = 'rejected';
+        await request.save();
 
-//         // Get donor details
-//         const donor = await Donor.findById(donorId);
+        // Get donor details
+        const donor = await Donor.findById(donorId);
 
-//         // Notify the receiver about rejection
-//         await createNotification(
-//             req,
-//             request.receiverId._id,
-//             'Request Rejected',
-//             `${donor.name} has rejected your request for: ${item.name}`,
-//             'request_rejected'
-//         );
+        // Notify the receiver about rejection
+        await createNotification(
+            req,
+            request.receiverId._id,
+            'Request Rejected',
+            `${donor.name} has rejected your request for: ${item.name}`,
+            'request_rejected'
+        );
 
-//         res.status(200).json({
-//             success: true,
-//             message: 'Request rejected successfully',
-//             request
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             success: false,
-//             message: 'Failed to reject request',
-//             error: error.message
-//         });
-//     }
-// };
+        res.status(200).json({
+            success: true,
+            message: 'Request rejected successfully',
+            request
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to reject request',
+            error: error.message
+        });
+    }
+};
 
 
-// Accept or reject a donation request (donor action)
+// track transaction status (admin action)
 export const updateTransactionStatus = async (req, res) => {
     try {
         const { status, deliveryDate, transactionId } = req.body;
@@ -641,5 +612,5 @@ export default {
     getTransactionById,
     initiateItemDonation,
     approveRequest,
-    // rejectRequest
+    rejectRequest
 }; 

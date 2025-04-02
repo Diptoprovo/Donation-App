@@ -6,19 +6,19 @@ import {
     updateRequest,
     deleteRequest
 } from '../controllers/requestController.js';
-import { authenticateUser, isReceiver } from '../middleware/authMiddleware.js';
+import { authenticateUser, isDonor, isReceiver } from '../middleware/authMiddleware.js';
 import { authenticateAdmin } from '../middleware/adminMiddleware.js';
 const requestRouter = express.Router();
 
 // Public routes
-requestRouter.get('/', getRequestById);
+requestRouter.get('/get-request-by-id', getRequestById);
 
-// Admin route (for future use)
-requestRouter.get('/', authenticateAdmin, getAllRequests);
+// Donor route (for future use)
+requestRouter.get('/get-all-requests', authenticateUser, isDonor, getAllRequests);
 
 // Protected routes (receiver only)
-requestRouter.post('/', authenticateUser, isReceiver, createRequest);
-requestRouter.put('/', authenticateUser, isReceiver, updateRequest);
-requestRouter.delete('/', authenticateUser, isReceiver, deleteRequest);
+requestRouter.post('/create-request', authenticateUser, isReceiver, createRequest);
+requestRouter.put('/update-request', authenticateUser, isReceiver, updateRequest);
+requestRouter.delete('/delete-request', authenticateUser, isReceiver, deleteRequest);
 
 export default requestRouter; 
