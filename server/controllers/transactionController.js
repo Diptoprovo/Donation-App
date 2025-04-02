@@ -635,7 +635,6 @@ export const getTransactionById = async (req, res) => {
 
 
 export default {
-    requestItem,
     updateTransactionStatus,
     getDonorTransactions,
     getReceiverTransactions,
