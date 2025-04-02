@@ -384,8 +384,7 @@ export const approveRequest = async (req, res) => {
 // Accept or reject a donation request (donor action)
 export const updateTransactionStatus = async (req, res) => {
     try {
-        const { status, deliveryDate } = req.body;
-        const transactionId = req.params.id;
+        const { status, deliveryDate, transactionId } = req.body;
         const donorId = req.userId;
 
         // Find transaction
@@ -527,8 +526,8 @@ export const updateTransactionStatus = async (req, res) => {
         res.status(200).json({
             success: true,
             message: `Transaction ${status === 'on the way' ? 'accepted' :
-                    status === 'delivered' ? 'marked as delivered' :
-                        'updated'
+                status === 'delivered' ? 'marked as delivered' :
+                    'updated'
                 } successfully`,
             transaction: updatedTransaction
         });

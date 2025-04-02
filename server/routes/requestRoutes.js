@@ -7,14 +7,14 @@ import {
     deleteRequest
 } from '../controllers/requestController.js';
 import { authenticateUser, isReceiver } from '../middleware/authMiddleware.js';
-
+import { authenticateAdmin } from '../middleware/adminMiddleware.js';
 const requestRouter = express.Router();
 
 // Public routes
 requestRouter.get('/', getRequestById);
 
 // Admin route (for future use)
-requestRouter.get('/', getAllRequests);
+requestRouter.get('/', authenticateAdmin, getAllRequests);
 
 // Protected routes (receiver only)
 requestRouter.post('/', authenticateUser, isReceiver, createRequest);
