@@ -16,8 +16,8 @@ itemRouter.get('/', getAllItems);
 itemRouter.get('/item', authenticateUser, getItemById);
 
 // Protected routes (donor only)
-itemRouter.post('/', authenticateUser, isDonor, upload.array('images', 5), createItem);
-itemRouter.put('/', authenticateUser, isDonor, upload.array('images', 5), updateItem);
-itemRouter.delete('/', authenticateUser, isDonor, deleteItem);
+itemRouter.post('/create-item', authenticateUser, isDonor, upload.array('images', 5), createItem);
+itemRouter.put('/update-item', authenticateUser, isDonor, upload.array('images', 5), updateItem);
+itemRouter.delete('/delete-item', authenticateUser, isDonor, deleteItem);
 
 export default itemRouter; 

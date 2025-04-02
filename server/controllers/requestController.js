@@ -5,7 +5,7 @@ import { notifyItemMatch } from '../utils/notificationUtils.js';
 import { notifyDonationRequest } from '../utils/notificationUtils.js';
 import { sendDonationMatchEmail } from '../utils/emailUtils.js';
 
-// Create a new request (general request without specific item)
+// Create a new request (general request without specific item) [not notifying the donors]
 export const createRequest = async (req, res) => {
     try {
         const { name, category, location } = req.body;
@@ -32,27 +32,11 @@ export const createRequest = async (req, res) => {
             location: location
         }).populate('donorId', 'name email');
 
-        // Notify matching donors if items are found
-        if (matchingItems.length > 0) {
-            // Get receiver details for notification
-            const receiver = await Receiver.findById(receiverId);
-
-            // Return matched items with the response
-            return res.status(201).json({
-                success: true,
-                message: 'General request created successfully and matching items found',
-                request,
-                matchingItems: {
-                    count: matchingItems.length,
-                    items: matchingItems
-                }
-            });
-        }
 
         // No matching items found
         res.status(201).json({
             success: true,
-            message: 'General request created successfully but no matching items found',
+            message: 'General request created successfully',
             request,
             matchingItems: {
                 count: 0,
@@ -68,7 +52,7 @@ export const createRequest = async (req, res) => {
     }
 };
 
-// Get all requests (admin feature)
+// Get all requests (admin feature) [it should be visible to all donors]
 export const getAllRequests = async (req, res) => {
     try {
         const requests = await Request.find().populate('receiverId', 'name email');

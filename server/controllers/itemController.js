@@ -4,7 +4,7 @@ import Request from '../models/requestModel.js';
 import Receiver from '../models/receiverModel.js';
 import { notifyItemMatch, notifyNewItemForRequest } from '../utils/notificationUtils.js';
 
-// Create a new donation item
+// Create a new donation item [puts in both itemlist and donationlist of donor] [notifying the receivers]
 export const createItem = async (req, res) => {
     try {
         const { name, condition, category, location } = req.body;
@@ -161,7 +161,7 @@ export const getDonorItems = async (req, res) => {
     }
 };
 
-// Update an item
+// Update an item [not updating the item at donor's donation list]
 export const updateItem = async (req, res) => {
     try {
         const { itemId } = req.body;
@@ -221,7 +221,7 @@ export const updateItem = async (req, res) => {
     }
 };
 
-// Delete an item
+// Delete an item [deletes the item from itemlist and donor's donation list]
 export const deleteItem = async (req, res) => {
     try {
         const { itemId } = req.body;
@@ -267,6 +267,37 @@ export const deleteItem = async (req, res) => {
         });
     }
 };
+
+
+// Get all available items for receivers to request
+export const getAvailableItems = async (req, res) => {
+    try {
+        // Optional filtering parameters
+        const { category, location } = req.query;
+        const filter = { isAvailable: true };
+        
+        // Apply filters if provided
+        if (category) filter.category = category;
+        if (location) filter.location = location;
+        
+        const items = await Item.find(filter)
+            .populate('donorId', 'name')
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json({
+            success: true,
+            count: items.length,
+            items
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get available items',
+            error: error.message
+        });
+    }
+};
+
 
 // Get items matching receiver's requests
 // export const getMatchingItems = async (req, res) => {
@@ -317,4 +348,5 @@ export default {
     updateItem,
     deleteItem,
     // getMatchingItems
+    getAvailableItems
 }; 
