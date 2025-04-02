@@ -8,18 +8,18 @@ import {
     getProfile,
     updateProfile
 } from '../controllers/authController.js';
-import { verifyToken } from '../middleware/authMiddleware.js';
+import { authenticateUser } from '../middleware/authMiddleware.js';
 
-const router = express.Router();
+const authRouter = express.Router();
 
 // Public routes
-router.post('/register/donor', registerDonor);
-router.post('/register/receiver', registerReceiver);
-router.post('/login', login);
-router.post('/logout', logout);
+authRouter.post('/register/donor', registerDonor);
+authRouter.post('/register/receiver', registerReceiver);
+authRouter.post('/login', login);
+authRouter.post('/logout', logout);
 
 // Protected routes
-router.get('/profile', verifyToken, getProfile);
-router.put('/profile', verifyToken, updateProfile);
+authRouter.get('/profile', authenticateUser, getProfile);
+authRouter.put('/profile', authenticateUser, updateProfile);
 
-export default router; 
+export default authRouter; 

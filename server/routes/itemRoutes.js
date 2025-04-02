@@ -6,18 +6,18 @@ import {
     updateItem,
     deleteItem
 } from '../controllers/itemController.js';
-import { verifyToken, isDonor } from '../middleware/authMiddleware.js';
+import { authenticateUser, isDonor } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
 
-const router = express.Router();
+const itemRouter = express.Router();
 
 // Public routes
-router.get('/', getAllItems);
-router.get('/:id', getItemById);
+itemRouter.get('/', getAllItems);
+itemRouter.get('/item', authenticateUser, getItemById);
 
 // Protected routes (donor only)
-router.post('/', verifyToken, isDonor, upload.array('images', 5), createItem);
-router.put('/:id', verifyToken, isDonor, upload.array('images', 5), updateItem);
-router.delete('/:id', verifyToken, isDonor, deleteItem);
+itemRouter.post('/', authenticateUser, isDonor, upload.array('images', 5), createItem);
+itemRouter.put('/', authenticateUser, isDonor, upload.array('images', 5), updateItem);
+itemRouter.delete('/', authenticateUser, isDonor, deleteItem);
 
-export default router; 
+export default itemRouter; 

@@ -7,7 +7,7 @@ export const authenticateUser = async (req, res, next) => {
     try {
         // Get token from cookie or authorization header
         const token = req.cookies.token;
-        
+
         if (!token) {
             return res.status(401).json({
                 success: false,
@@ -17,10 +17,10 @@ export const authenticateUser = async (req, res, next) => {
 
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         // Get user type and ID
         const { id, type } = decoded;
-        
+
         // Find user based on type
         if (type === 'donor') {
             req.user = await Donor.findById(id).select('-password');
@@ -32,14 +32,14 @@ export const authenticateUser = async (req, res, next) => {
                 message: 'Invalid user type'
             });
         }
-        
+
         if (!req.user) {
             return res.status(401).json({
                 success: false,
                 message: 'User not found'
             });
         }
-        
+
         req.userType = type;
         req.userId = id;
 

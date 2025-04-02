@@ -3,16 +3,16 @@ import { authenticateUser, authorizeRole } from '../middleware/authMiddleware.js
 import { getDonorItems } from '../controllers/itemController.js';
 import { getDonorTransactions } from '../controllers/transactionController.js';
 
-const router = express.Router();
+const donorRouter = express.Router();
 
 // Apply auth middleware to all routes
-router.use(authenticateUser, authorizeRole('donor'));
+donorRouter.use(authenticateUser, authorizeRole('donor'));
 
 // Get donor's items
-router.get('/items', getDonorItems);
+donorRouter.get('/items', getDonorItems);
 
 // Get donor's transactions
-router.get('/transactions', getDonorTransactions);
+donorRouter.get('/transactions', getDonorTransactions);
 
 
-export default router; 
+export default donorRouter; 

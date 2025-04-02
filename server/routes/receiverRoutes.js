@@ -2,20 +2,20 @@ import express from 'express';
 import { authenticateUser, authorizeRole } from '../middleware/authMiddleware.js';
 import { getReceiverRequests } from '../controllers/requestController.js';
 import { getReceiverTransactions } from '../controllers/transactionController.js';
-import { getMatchingItems } from '../controllers/itemController.js';
+// import { getMatchingItems } from '../controllers/itemController.js';
 
-const router = express.Router();
+const receiverRouter = express.Router();
 
 // Apply auth middleware to all routes
-router.use(authenticateUser, authorizeRole('receiver'));
+receiverRouter.use(authenticateUser, authorizeRole('receiver'));
 
 // Get receiver's requests
-router.get('/requests', getReceiverRequests);
+receiverRouter.get('/requests', getReceiverRequests);
 
 // Get receiver's transactions
-router.get('/transactions', getReceiverTransactions);
+receiverRouter.get('/transactions', getReceiverTransactions);
 
 // Get items matching receiver's requests
-router.get('/matching-items', getMatchingItems);
+// receiverRouter.get('/matching-items', getMatchingItems);
 
-export default router; 
+export default receiverRouter; 

@@ -10,7 +10,7 @@ export const createRequest = async (req, res) => {
     try {
         const { name, category, location } = req.body;
         const receiverId = req.userId;
-        
+
         // Create new request (general request without specific item)
         const request = await Request.create({
             name,
@@ -19,24 +19,24 @@ export const createRequest = async (req, res) => {
             receiverId,
             status: 'pending'
         });
-        
+
         // Add request to receiver's request list
         await Receiver.findByIdAndUpdate(
             receiverId,
             { $push: { requestList: request._id } }
         );
-        
+
         // Find matching items based on category and location
         const matchingItems = await Item.find({
             category: category,
             location: location
         }).populate('donorId', 'name email');
-        
+
         // Notify matching donors if items are found
         if (matchingItems.length > 0) {
             // Get receiver details for notification
             const receiver = await Receiver.findById(receiverId);
-            
+
             // Return matched items with the response
             return res.status(201).json({
                 success: true,
@@ -48,7 +48,7 @@ export const createRequest = async (req, res) => {
                 }
             });
         }
-        
+
         // No matching items found
         res.status(201).json({
             success: true,
@@ -72,7 +72,7 @@ export const createRequest = async (req, res) => {
 export const getAllRequests = async (req, res) => {
     try {
         const requests = await Request.find().populate('receiverId', 'name email');
-        
+
         res.status(200).json({
             success: true,
             count: requests.length,
@@ -91,10 +91,10 @@ export const getAllRequests = async (req, res) => {
 export const getReceiverRequests = async (req, res) => {
     try {
         const receiverId = req.userId;
-        
+
         // Find all requests by receiver ID
         const requests = await Request.find({ receiverId });
-        
+
         res.status(200).json({
             success: true,
             count: requests.length,
@@ -112,18 +112,18 @@ export const getReceiverRequests = async (req, res) => {
 // Get request by ID
 export const getRequestById = async (req, res) => {
     try {
-        const requestId = req.params.id;
-        
+        const { requestId } = req.body;
+
         // Find request by ID
         const request = await Request.findById(requestId).populate('receiverId', 'name email phone');
-        
+
         if (!request) {
             return res.status(404).json({
                 success: false,
                 message: 'Request not found'
             });
         }
-        
+
         res.status(200).json({
             success: true,
             request
@@ -140,13 +140,13 @@ export const getRequestById = async (req, res) => {
 // Update a request
 export const updateRequest = async (req, res) => {
     try {
-        const requestId = req.params.id;
+        const { requestId } = req.body;
         const { name, category, location } = req.body;
         const receiverId = req.userId;
-        
+
         // Find request
         const request = await Request.findById(requestId);
-        
+
         // Check if request exists
         if (!request) {
             return res.status(404).json({
@@ -154,7 +154,7 @@ export const updateRequest = async (req, res) => {
                 message: 'Request not found'
             });
         }
-        
+
         // Check if receiver owns the request
         if (request.receiverId.toString() !== receiverId) {
             return res.status(403).json({
@@ -162,7 +162,7 @@ export const updateRequest = async (req, res) => {
                 message: 'Access denied. Not the owner of the request'
             });
         }
-        
+
         // Update request
         const updatedRequest = await Request.findByIdAndUpdate(
             requestId,
@@ -173,13 +173,13 @@ export const updateRequest = async (req, res) => {
             },
             { new: true }
         );
-        
+
         // Find matching items based on updated category and location
         const matchingItems = await Item.find({
             category: category,
             location: location
         }).populate('donorId', 'name email');
-        
+
         res.status(200).json({
             success: true,
             message: 'Request updated successfully',
@@ -201,12 +201,12 @@ export const updateRequest = async (req, res) => {
 // Delete a request
 export const deleteRequest = async (req, res) => {
     try {
-        const requestId = req.params.id;
+        const { requestId } = req.body;
         const receiverId = req.userId;
-        
+
         // Find request
         const request = await Request.findById(requestId);
-        
+
         // Check if request exists
         if (!request) {
             return res.status(404).json({
@@ -214,7 +214,7 @@ export const deleteRequest = async (req, res) => {
                 message: 'Request not found'
             });
         }
-        
+
         // Check if receiver owns the request
         if (request.receiverId.toString() !== receiverId) {
             return res.status(403).json({
@@ -222,16 +222,16 @@ export const deleteRequest = async (req, res) => {
                 message: 'Access denied. Not the owner of the request'
             });
         }
-        
+
         // Delete request
         await Request.findByIdAndDelete(requestId);
-        
+
         // Remove request from receiver's request list
         await Receiver.findByIdAndUpdate(
             receiverId,
             { $pull: { requestList: requestId } }
         );
-        
+
         res.status(200).json({
             success: true,
             message: 'Request deleted successfully'
@@ -253,5 +253,4 @@ export default {
     getRequestById,
     updateRequest,
     deleteRequest,
-}; 
- 
+};
