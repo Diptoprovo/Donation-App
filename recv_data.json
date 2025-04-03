@@ -1,0 +1,26 @@
+[
+    {
+        "name": "David Miller",
+        "email": "david@example.com",
+        "password": "hashedpassword1",
+        "address": "321 Birch St, Metropolis",
+        "phone": "+1123456789",
+        "requestList": []
+    },
+    {
+        "name": "Emma Wilson",
+        "email": "emma@example.com",
+        "password": "hashedpassword2",
+        "address": "654 Pine St, Greenwood",
+        "phone": "+1987456321",
+        "requestList": []
+    },
+    {
+        "name": "Sophia Martinez",
+        "email": "sophia@example.com",
+        "password": "hashedpassword3",
+        "address": "987 Cedar St, Hilltown",
+        "phone": "+1109876543",
+        "requestList": []
+    }
+]
