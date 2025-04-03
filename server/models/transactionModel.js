@@ -39,7 +39,6 @@ const transactionSchema = new Schema({
     }
 }, { timestamps: true });
 
-// Ensure reusability in Next.js API routes
 const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
 
 export default Transaction;

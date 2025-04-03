@@ -8,60 +8,60 @@ import Request from '../models/requestModel.js';
 // import { captureRejectionSymbol } from 'nodemailer/lib/xoauth2/index.js';
 
 // Request an Category of items
-export const requestCategory = async (req, res) => {
-    try {
-        const { message, category, location } = req.body;
-        const receiverId = req.userId;
+// export const requestCategory = async (req, res) => {
+//     try {
+//         const { message, category, location } = req.body;
+//         const receiverId = req.userId;
 
-        // Check if a pending request already exists for this item and receiver
-        const existingRequest = await Request.findOne({
-            category: category,
-            receiverId: receiverId
-        });
+//         // Check if a pending request already exists for this item and receiver
+//         const existingRequest = await Request.findOne({
+//             category: category,
+//             receiverId: receiverId
+//         });
 
-        if (existingRequest) {
-            return res.status(400).json({
-                success: false,
-                message: 'You have already requested for this category'
-            });
-        }
+//         if (existingRequest) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'You have already requested for this category'
+//             });
+//         }
 
-        // Get receiver details for notification
-        const receiver = await Receiver.findById(receiverId);
+//         // Get receiver details for notification
+//         const receiver = await Receiver.findById(receiverId);
 
-        // Create a new request specifically for this item
-        const request = await Request.create({
-            category: category,
-            location: location,
-            receiverId: receiverId,
-            message: message
-        });
+//         // Create a new request specifically for this item
+//         const request = await Request.create({
+//             category: category,
+//             location: location,
+//             receiverId: receiverId,
+//             message: message
+//         });
 
-        // Add request to receiver's request list
-        await Receiver.findByIdAndUpdate(
-            receiverId,
-            { $push: { requestList: request._id } }
-        );
+//         // Add request to receiver's request list
+//         await Receiver.findByIdAndUpdate(
+//             receiverId,
+//             { $push: { requestList: request._id } }
+//         );
 
-        // Send notification to donor
-        await notifyDonationRequest(
-            req,
-            receiver.name
-        );
+//         // Send notification to donor
+//         await notifyDonationRequest(
+//             req,
+//             receiver.name
+//         );
 
-        res.status(201).json({
-            success: true,
-            message: 'Item requested successfully. Your Requested has been posted',
-            request
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to request item',
-            error: error.message
-        });
-    }
-};
+//         res.status(201).json({
+//             success: true,
+//             message: 'Item requested successfully. Your Requested has been posted',
+//             request
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: 'Failed to request item',
+//             error: error.message
+//         });
+//     }
+// };
 
 export const initiateTransaction = async (req, res) => {
     try {
@@ -229,7 +229,6 @@ export const initiateItemDonation = async (req, res) => {
             });
         }
         const category = item.category;
-
         const request = await Request.findOne({ receiverId: receiverId, category: category }).populate('receiverId');
         if (!request) {
             return res.status(404).json({
@@ -274,13 +273,6 @@ export const initiateItemDonation = async (req, res) => {
             item.name,
             donor.name
         );
-
-        // Remove the request from receiver's requestList
-        await Receiver.findByIdAndUpdate(
-            receiverId,
-            { $pull: { requestList: request._id } }
-        );
-
 
         res.status(201).json({
             success: true,
@@ -519,10 +511,7 @@ export const getTransactionById = async (req, res) => {
         }
 
         // Check if user is authorized to view this transaction
-        if (
-            transaction.donorId._id.toString() !== req.userId &&
-            transaction.receiverId._id.toString() !== req.userId
-        ) {
+        if ( transaction.donorId._id.toString() !== req.userId && transaction.receiverId._id.toString() !== req.userId ) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Not authorized to view this transaction'

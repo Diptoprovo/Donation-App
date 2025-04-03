@@ -25,7 +25,6 @@ export const createRequest = async (req, res) => {
             });
         }
 
-
         // Create new request (general request without specific item)
         const request = await Request.create({
             message,

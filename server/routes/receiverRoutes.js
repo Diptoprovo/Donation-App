@@ -19,7 +19,4 @@ receiverRouter.get('/transactions', getReceiverTransactions);
 // Get all available items for request
 receiverRouter.get('/available-items', getAvailableItems);
 
-// Get items matching receiver's requests
-// receiverRouter.get('/matching-items', getMatchingItems);
-
 export default receiverRouter; 

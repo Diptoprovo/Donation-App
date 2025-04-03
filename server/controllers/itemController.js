@@ -273,8 +273,8 @@ export const deleteItem = async (req, res) => {
 export const getAvailableItems = async (req, res) => {
     try {
         // Optional filtering parameters
-        const { category, location } = req.query;
-        const filter = { isAvailable: true };
+        const { category, location } = req.body;
+        const filter = {};
         
         // Apply filters if provided
         if (category) filter.category = category;
