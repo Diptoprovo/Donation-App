@@ -33,6 +33,11 @@ const itemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Donor',
         required: true
+    },
+    isAvailable:{
+        type: Boolean,
+        default: true,
+        required: false
     }
 });
 

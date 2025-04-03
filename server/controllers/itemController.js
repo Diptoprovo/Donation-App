@@ -85,17 +85,8 @@ export const createItem = async (req, res) => {
 // Get all donation items
 export const getAllItems = async (req, res) => {
     try {
-        // Parse query parameters
-        const { category, condition, location } = req.body;
-        const filter = {};
-
-        // Apply filters if provided
-        if (category) filter.category = category;
-        if (condition) filter.condition = condition;
-        if (location) filter.location = location;
-
-        // Get all items with applied filters
-        const items = await Item.find(filter).populate('donorId', 'name email');
+        // Get all items with available filter
+        const items = await Item.find({isAvailable:true}).populate('donorId', 'name email');
 
         res.status(200).json({
             success: true,
@@ -119,7 +110,7 @@ export const getItemById = async (req, res) => {
         // Find item by ID and populate donor information
         const item = await Item.findById(itemId).populate('donorId', 'name email phone');
 
-        if (!item) {
+        if (!item||item.isAvailable===false) {
             return res.status(404).json({
                 success: false,
                 message: 'Item not found'
@@ -143,10 +134,8 @@ export const getItemById = async (req, res) => {
 export const getDonorItems = async (req, res) => {
     try {
         const donorId = req.userId;
-
         // Find all items by donor ID
         const items = await Item.find({ donorId });
-
         res.status(200).json({
             success: true,
             count: items.length,
@@ -227,10 +216,7 @@ export const deleteItem = async (req, res) => {
         const { itemId } = req.body;
         const donorId = req.userId;
 
-        // Find item
         const item = await Item.findById(itemId);
-
-        // Check if item exists
         if (!item) {
             return res.status(404).json({
                 success: false,
@@ -238,23 +224,14 @@ export const deleteItem = async (req, res) => {
             });
         }
 
-        // Check if donor owns the item
         if (item.donorId.toString() !== donorId) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Not the owner of the item'
             });
         }
-
-        // Delete item
-        await Item.findByIdAndDelete(itemId);
-
-        // Remove item from donor's donation list
-        await Donor.findByIdAndUpdate(
-            donorId,
-            { $pull: { donationList: itemId } }
-        );
-
+        //logical deletion now waaaaay
+        await Item.findByIdAndUpdate(itemId, { isAvailable: false });
         res.status(200).json({
             success: true,
             message: 'Item deleted successfully'
@@ -268,21 +245,17 @@ export const deleteItem = async (req, res) => {
     }
 };
 
-
-// Get all available items for receivers to request
+// Get all available items in the basis of category and location.. use this to apply filter.
 export const getAvailableItems = async (req, res) => {
     try {
         // Optional filtering parameters
         const { category, location } = req.body;
-        const filter = {};
-        
         // Apply filters if provided
         if (category) filter.category = category;
         if (location) filter.location = location;
+        filter.isAvailable = true;
         
-        const items = await Item.find(filter)
-            .populate('donorId', 'name')
-            .sort({ createdAt: -1 });
+        const items = await Item.find(filter).populate('donorId', 'name').sort({ createdAt: -1 });
         
         res.status(200).json({
             success: true,
@@ -298,48 +271,6 @@ export const getAvailableItems = async (req, res) => {
     }
 };
 
-
-// Get items matching receiver's requests
-// export const getMatchingItems = async (req, res) => {
-//     try {
-//         const receiverId = req.userId;
-
-//         // Get receiver's requests
-//         const receiver = await Receiver.findById(receiverId).populate('requestList');
-
-//         if (!receiver.requestList || receiver.requestList.length === 0) {
-//             return res.status(200).json({
-//                 success: true,
-//                 message: 'No requests found to match',
-//                 items: []
-//             });
-//         }
-
-//         // Extract categories and locations from requests
-//         const requestFilters = receiver.requestList.map(request => ({
-//             category: request.category,
-//             location: request.location
-//         }));
-
-//         // Find items matching any request criteria
-//         const matchingItems = await Item.find({
-//             $or: requestFilters
-//         }).populate('donorId', 'name email');
-
-//         res.status(200).json({
-//             success: true,
-//             count: matchingItems.length,
-//             items: matchingItems
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             success: false,
-//             message: 'Failed to get matching items',
-//             error: error.message
-//         });
-//     }
-// };
-
 export default {
     createItem,
     getAllItems,
@@ -347,6 +278,5 @@ export default {
     getDonorItems,
     updateItem,
     deleteItem,
-    // getMatchingItems
     getAvailableItems
 }; 

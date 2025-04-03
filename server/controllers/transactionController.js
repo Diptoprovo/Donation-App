@@ -386,35 +386,8 @@ export const updateTransactionStatus = async (req, res) => {
                 ...item.toObject(),
                 donorId: donor
             });
-
-            // Find all matching requests to this item
-            const matchingRequests = await Request.find({
-                category: item.category,
-                location: item.location
-            });
-
-            // // Remove the matched request from the receiver's requestList
-            // for (const matchedRequest of matchingRequests) {
-            //     if (matchedRequest.receiverId.toString() === transaction.receiverId.toString()) {
-            //         // Remove this request from receiver's requestList
-            //         await Receiver.findByIdAndUpdate(
-            //             transaction.receiverId,
-            //             { $pull: { requestList: matchedRequest._id } }
-            //         );
-
-            //         // Delete the request as it's now fulfilled
-            //         await Request.findByIdAndDelete(matchedRequest._id);
-            //     }
-            // }
-
-            // // Remove the item from donor's donationList
-            // await Donor.findByIdAndUpdate(
-            //     donor._id,
-            //     { $pull: { donationList: item._id } }
-            // );
-
-            // // Mark the item as unavailable or delete it since it's now being donated
-            // await Item.findByIdAndDelete(transaction.itemId);
+            // Mark the item as unavailable or delete it since it's now being donated
+            await Item.findByIdAndUpdate(transaction.itemId,{isAvaliable: false});
         }
 
         // If status changed to 'delivered', notify receiver
@@ -424,6 +397,7 @@ export const updateTransactionStatus = async (req, res) => {
                 transaction.receiverId,
                 item.name
             );
+            await Item.findByIdAndUpdate(transaction.itemId,{isAvaliable: false});
         }
 
         res.status(200).json({
