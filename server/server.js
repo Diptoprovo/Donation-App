@@ -22,7 +22,8 @@ const port = process.env.PORT || 4000;
 connectDB();
 
 // Configure CORS
-const allowedOrigins = [process.env.FRONTEND_URL];
+// const allowedOrigins = [process.env.FRONTEND_URL];
+const allowedOrigins = [];
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
