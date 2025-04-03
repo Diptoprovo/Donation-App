@@ -292,7 +292,7 @@ export const initiateItemDonation = async (req, res) => {
 export const updateTransactionStatus = async (req, res) => {
     try {
         const { status, deliveryDate, transactionId } = req.body;
-        const adminId = req.userId; // gotta check this functionality in adminMiddleware or authMiddleware
+        const adminId = req.userId; 
         // Find transaction
         const transaction = await Transaction.findById(transactionId);
 
@@ -393,28 +393,28 @@ export const updateTransactionStatus = async (req, res) => {
                 location: item.location
             });
 
-            // Remove the matched request from the receiver's requestList
-            for (const matchedRequest of matchingRequests) {
-                if (matchedRequest.receiverId.toString() === transaction.receiverId.toString()) {
-                    // Remove this request from receiver's requestList
-                    await Receiver.findByIdAndUpdate(
-                        transaction.receiverId,
-                        { $pull: { requestList: matchedRequest._id } }
-                    );
+            // // Remove the matched request from the receiver's requestList
+            // for (const matchedRequest of matchingRequests) {
+            //     if (matchedRequest.receiverId.toString() === transaction.receiverId.toString()) {
+            //         // Remove this request from receiver's requestList
+            //         await Receiver.findByIdAndUpdate(
+            //             transaction.receiverId,
+            //             { $pull: { requestList: matchedRequest._id } }
+            //         );
 
-                    // Delete the request as it's now fulfilled
-                    await Request.findByIdAndDelete(matchedRequest._id);
-                }
-            }
+            //         // Delete the request as it's now fulfilled
+            //         await Request.findByIdAndDelete(matchedRequest._id);
+            //     }
+            // }
 
-            // Remove the item from donor's donationList
-            await Donor.findByIdAndUpdate(
-                donor._id,
-                { $pull: { donationList: item._id } }
-            );
+            // // Remove the item from donor's donationList
+            // await Donor.findByIdAndUpdate(
+            //     donor._id,
+            //     { $pull: { donationList: item._id } }
+            // );
 
-            // Mark the item as unavailable or delete it since it's now being donated
-            await Item.findByIdAndDelete(transaction.itemId);
+            // // Mark the item as unavailable or delete it since it's now being donated
+            // await Item.findByIdAndDelete(transaction.itemId);
         }
 
         // If status changed to 'delivered', notify receiver
