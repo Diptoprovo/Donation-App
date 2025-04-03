@@ -8,16 +8,15 @@ import { sendDonationMatchEmail } from '../utils/emailUtils.js';
 // Create a new request (general request without specific item) [not notifying the donors]
 export const createRequest = async (req, res) => {
     try {
-        const { name, category, location } = req.body;
+        const { message, category, location } = req.body;
         const receiverId = req.userId;
 
         // Create new request (general request without specific item)
         const request = await Request.create({
-            name,
+            message,
             category,
             location,
-            receiverId,
-            status: 'pending'
+            receiverId
         });
 
         // Add request to receiver's request list
@@ -25,23 +24,12 @@ export const createRequest = async (req, res) => {
             receiverId,
             { $push: { requestList: request._id } }
         );
-
-        // Find matching items based on category and location
-        const matchingItems = await Item.find({
-            category: category,
-            location: location
-        }).populate('donorId', 'name email');
-
-
+       
         // No matching items found
         res.status(201).json({
             success: true,
             message: 'General request created successfully',
             request,
-            matchingItems: {
-                count: 0,
-                items: []
-            }
         });
     } catch (error) {
         res.status(500).json({
@@ -55,8 +43,14 @@ export const createRequest = async (req, res) => {
 // Get all requests (admin feature) [it should be visible to all donors]
 export const getAllRequests = async (req, res) => {
     try {
-        const requests = await Request.find().populate('receiverId', 'name email');
-
+        const requests = await Request.find().populate('receiverId', 'message category');
+        const donorId = req.userId;
+        if(!donorId) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Not a donor'
+            });
+        }
         res.status(200).json({
             success: true,
             count: requests.length,
@@ -97,17 +91,15 @@ export const getReceiverRequests = async (req, res) => {
 export const getRequestById = async (req, res) => {
     try {
         const { requestId } = req.body;
-
+        const receiverId = req.userId;
         // Find request by ID
-        const request = await Request.findById(requestId).populate('receiverId', 'name email phone');
-
+        const request = await Request.findOne({receiverId:receiverId,requestId:requestId}).populate('receiverId', 'message category');
         if (!request) {
             return res.status(404).json({
                 success: false,
                 message: 'Request not found'
             });
         }
-
         res.status(200).json({
             success: true,
             request
@@ -124,8 +116,7 @@ export const getRequestById = async (req, res) => {
 // Update a request
 export const updateRequest = async (req, res) => {
     try {
-        const { requestId } = req.body;
-        const { name, category, location } = req.body;
+        const { message, category, location, requestId } = req.body;
         const receiverId = req.userId;
 
         // Find request
@@ -151,7 +142,7 @@ export const updateRequest = async (req, res) => {
         const updatedRequest = await Request.findByIdAndUpdate(
             requestId,
             {
-                name,
+                message,
                 category,
                 location
             },
@@ -159,19 +150,10 @@ export const updateRequest = async (req, res) => {
         );
 
         // Find matching items based on updated category and location
-        const matchingItems = await Item.find({
-            category: category,
-            location: location
-        }).populate('donorId', 'name email');
-
         res.status(200).json({
             success: true,
             message: 'Request updated successfully',
-            request: updatedRequest,
-            matchingItems: {
-                count: matchingItems.length,
-                items: matchingItems
-            }
+            request: updatedRequest
         });
     } catch (error) {
         res.status(500).json({

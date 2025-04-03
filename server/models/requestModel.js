@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const requestSchema = new Schema({
-    name: {
+    message: {
         type: String,
         required: true,
         trim: true
@@ -22,20 +22,6 @@ const requestSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Receiver',
         required: true
-    },
-    itemId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Item',
-        // Not required for general requests without a specific item
-    },
-    status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 });
 

@@ -15,10 +15,9 @@ import requestRouter from "./routes/requestRoutes.js";
 import transactionRouter from "./routes/transactionRoutes.js";
 
 const app = express();
-const httpServer = createServer(app);  // ✅ Create HTTP server
+const httpServer = createServer(app);  
 const port = process.env.PORT || 4000;
 
-// Connect to MongoDB
 connectDB();
 
 // Configure CORS

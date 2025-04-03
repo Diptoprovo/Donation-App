@@ -4,7 +4,8 @@ import {
     getTransactionById,
     initiateItemDonation,
     approveRequest,
-    rejectRequest
+    rejectRequest,
+    requestCategory
 } from '../controllers/transactionController.js';
 import { authenticateUser, authorizeRole } from '../middleware/authMiddleware.js';
 import { authenticateAdmin } from '../middleware/adminMiddleware.js';
@@ -18,7 +19,7 @@ transactionRouter.use(authenticateUser);
 transactionRouter.get('/:id', getTransactionById);
 
 // Request a specific item (receiver only)
-transactionRouter.post('/request-item', authorizeRole('receiver'), requestItem);
+transactionRouter.post('/request-item', authorizeRole('receiver'), requestCategory);
 
 // Update transaction status (admin only)
 transactionRouter.put('/:id/status', authenticateAdmin, updateTransactionStatus);

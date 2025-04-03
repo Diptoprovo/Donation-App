@@ -20,12 +20,12 @@ export const createNotification = async (req, userId, title, message, type) => {
 };
 
 // Send notification for new donation request
-export const notifyDonationRequest = async (req, donorId, itemName, receiverName) => {
+export const notifyDonationRequest = async (req,receiverName) => {
     const title = 'New Donation Request';
-    const message = `${receiverName} has requested your donation: ${itemName}`;
+    const message = `${receiverName} has requested donation: ${req.body.category}`;
     const type = 'donation_request';
     
-    return await createNotification(req, donorId, title, message, type);
+    return await createNotification(req, req.userId, title, message, type);
 };
 
 // Send notification for request acceptance
