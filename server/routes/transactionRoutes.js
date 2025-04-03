@@ -28,7 +28,7 @@ transactionRouter.get('/:id', getTransactionById);
 transactionRouter.post('/new', authenticateUser, authorizeRole('receiver'), initiateTransaction);
 
 //Donor accpets or rejects a request
-transactionRouter.put('/donor-update', authenticateUser, authorizeRole('Donor'), approveOrRejectRequest);
+transactionRouter.put('/donor-update', authenticateUser, authorizeRole('donor'), approveOrRejectRequest);
 
 // Update transaction status (admin only)
 transactionRouter.put('/:id/status', authenticateAdmin, updateTransactionStatus);
