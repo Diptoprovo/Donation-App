@@ -161,6 +161,8 @@ export const approveOrRejectRequest = async (req, res) => {
                 { new: true }
             );
 
+            await Item.findByIdAndUpdate(transaction.itemId, { isAvailable: false });
+
             // Notify receiver about rejection
             await createNotification(
                 req,
@@ -263,6 +265,11 @@ export const initiateItemDonation = async (req, res) => {
             status: 'on the way'
         });
 
+
+        if (transaction) {
+            await Item.findByIdAndUpdate(itemId, { isAvailable: false });
+        }
+
         // Get donor details
         const donor = await Donor.findById(donorId);
 
@@ -292,7 +299,7 @@ export const initiateItemDonation = async (req, res) => {
 export const updateTransactionStatus = async (req, res) => {
     try {
         const { status, deliveryDate, transactionId } = req.body;
-        const adminId = req.userId; 
+        const adminId = req.userId;
         // Find transaction
         const transaction = await Transaction.findById(transactionId);
 
@@ -387,7 +394,7 @@ export const updateTransactionStatus = async (req, res) => {
                 donorId: donor
             });
             // Mark the item as unavailable or delete it since it's now being donated
-            await Item.findByIdAndUpdate(transaction.itemId,{isAvaliable: false});
+            await Item.findByIdAndUpdate(transaction.itemId, { isAvailable: false });
         }
 
         // If status changed to 'delivered', notify receiver
@@ -397,7 +404,7 @@ export const updateTransactionStatus = async (req, res) => {
                 transaction.receiverId,
                 item.name
             );
-            await Item.findByIdAndUpdate(transaction.itemId,{isAvaliable: false});
+            await Item.findByIdAndUpdate(transaction.itemId, { isAvailable: false });
         }
 
         res.status(200).json({
@@ -485,7 +492,7 @@ export const getTransactionById = async (req, res) => {
         }
 
         // Check if user is authorized to view this transaction
-        if ( transaction.donorId._id.toString() !== req.userId && transaction.receiverId._id.toString() !== req.userId ) {
+        if (transaction.donorId._id.toString() !== req.userId && transaction.receiverId._id.toString() !== req.userId) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Not authorized to view this transaction'
@@ -515,5 +522,5 @@ export default {
     initiateItemDonation,
     // approveRequest,
     // rejectRequest,
-    requestCategory
+    // requestCategory
 }; 

@@ -107,7 +107,7 @@ export const getRequestById = async (req, res) => {
         const { requestId } = req.body;
         const receiverId = req.userId;
         // Find request by ID
-        const request = await Request.findOne({ receiverId: receiverId, requestId: requestId }).populate('receiverId', 'message category');
+        const request = await Request.findOne({ receiverId: receiverId, _id: requestId }).populate('receiverId', 'message category');
         if (!request) {
             return res.status(404).json({
                 success: false,

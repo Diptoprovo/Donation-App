@@ -12,7 +12,7 @@ import { authenticateAdmin } from '../middleware/adminMiddleware.js';
 const transactionRouter = express.Router();
 
 // Get a specific transaction (both donor and receiver can access)
-transactionRouter.get('/:id', getTransactionById);
+transactionRouter.get('/:id', authenticateUser, getTransactionById);
 
 //Receiver requests a listed product
 transactionRouter.post('/new', authenticateUser, authorizeRole('receiver'), initiateTransaction);

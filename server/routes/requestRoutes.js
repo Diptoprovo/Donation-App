@@ -10,7 +10,7 @@ import { authenticateUser, isDonor, isReceiver } from '../middleware/authMiddlew
 import { authenticateAdmin } from '../middleware/adminMiddleware.js';
 const requestRouter = express.Router();
 
-requestRouter.get('/get-request-by-id', getRequestById);
+requestRouter.get('/get-request-by-id', authenticateUser, isReceiver, getRequestById);
 requestRouter.get('/get-all-requests', authenticateUser, isDonor, getAllRequests);
 requestRouter.post('/create-request', authenticateUser, isReceiver, createRequest);
 requestRouter.put('/update-request', authenticateUser, isReceiver, updateRequest);
