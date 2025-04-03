@@ -217,7 +217,7 @@ export const deleteItem = async (req, res) => {
         const donorId = req.userId;
 
         const item = await Item.findById(itemId);
-        if (!item) {
+        if (!item||item.isAvailable===false) {
             return res.status(404).json({
                 success: false,
                 message: 'Item not found'
@@ -230,7 +230,7 @@ export const deleteItem = async (req, res) => {
                 message: 'Access denied. Not the owner of the item'
             });
         }
-        //logical deletion now waaaaay
+        //logical deletion no waaaaay
         await Item.findByIdAndUpdate(itemId, { isAvailable: false });
         res.status(200).json({
             success: true,
