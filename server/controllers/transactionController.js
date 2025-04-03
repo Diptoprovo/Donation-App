@@ -107,6 +107,12 @@ export const initiateTransaction = async (req, res) => {
             receiver.name
         )
 
+        return res.status(200).json({
+            success: true,
+            message: 'Transaction initiated successfully',
+            transaction: transaction
+        });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -166,7 +172,7 @@ export const approveOrRejectRequest = async (req, res) => {
 
             return res.status(200).json({
                 success: true,
-                message: 'Transaction rejected successfully',
+                message: 'Transaction approved successfully',
                 transaction: updatedTransaction
             });
         }
@@ -193,6 +199,11 @@ export const approveOrRejectRequest = async (req, res) => {
                 transaction: updatedTransaction
             });
         }
+
+        return res.status(401).json({
+            success: false,
+            message: "invalid status provided"
+        })
 
     } catch (error) {
         res.status(500).json({

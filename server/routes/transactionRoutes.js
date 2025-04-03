@@ -36,10 +36,5 @@ transactionRouter.put('/:id/status', authenticateAdmin, updateTransactionStatus)
 // Donor initiates donation for a specific request (donor only)
 transactionRouter.post('/donate', authorizeRole('donor'), initiateItemDonation);
 
-// // Approve a specific request (donor only)
-// transactionRouter.post('/requests/:requestId/approve', authorizeRole('donor'), approveRequest);
-
-// // Reject a specific request (donor only)
-// transactionRouter.post('/requests/:requestId/reject', authorizeRole('donor'), rejectRequest);
 
 export default transactionRouter; 
