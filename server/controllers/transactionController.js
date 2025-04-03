@@ -2,15 +2,15 @@ import Transaction from '../models/transactionModel.js';
 import Item from '../models/itemModel.js';
 import Donor from '../models/donorModel.js';
 import Receiver from '../models/receiverModel.js';
-import { notifyDonationRequest, notifyRequestAccepted, notifyDonationDelivery, createNotification } from '../utils/notificationUtils.js';
+import { notifyDonationRequest, notifyRequestAccepted, notifyDonationDelivery, createNotification, notifyInitiationTransaction } from '../utils/notificationUtils.js';
 import { sendDonationMatchEmail, sendRequestAcceptedEmail } from '../utils/emailUtils.js';
 import Request from '../models/requestModel.js';
-import { captureRejectionSymbol } from 'nodemailer/lib/xoauth2/index.js';
+// import { captureRejectionSymbol } from 'nodemailer/lib/xoauth2/index.js';
 
 // Request an Category of items
 export const requestCategory = async (req, res) => {
     try {
-        const { message,category,location } = req.body;
+        const { message, category, location } = req.body;
         const receiverId = req.userId;
 
         // Check if a pending request already exists for this item and receiver
@@ -63,6 +63,146 @@ export const requestCategory = async (req, res) => {
     }
 };
 
+export const initiateTransaction = async (req, res) => {
+    try {
+        const { donorId, itemId } = req.body;
+        const receiverId = req.userId;
+
+        //check if item exists
+        const item = await Item.findById(itemId);
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: 'Item not found'
+            });
+        }
+        // Check if donor owns the item
+        if (item.donorId.toString() !== donorId) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Not the owner of the item'
+            });
+        }
+
+        const transaction = await Transaction.create({
+            donorId,
+            receiverId: receiverId,
+            itemId,
+            requestDate: new Date(),
+            deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 days
+            status: 'pending'
+        });
+
+        const donor = await Donor.findById(donorId);
+        const receiver = await Receiver.findById(receiverId);
+        if (!donor || !receiver) {
+            return res.status(401).json({
+                success: false,
+                message: "Donor or Receiver not found"
+            })
+        }
+        await notifyInitiationTransaction(
+            req,
+            donorId,
+            receiver.name
+        )
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to initiate donation',
+            error: error.message
+        });
+    }
+}
+
+export const approveOrRejectRequest = async (req, res) => {
+    try {
+        const { transactionId, status } = req.body;
+        const donorId = req.userId;
+
+        const transaction = await Transaction.findById(transactionId).populate('itemId', 'name');
+
+        //check if tran exists
+        if (!transaction) {
+            return res.status(401).json({
+                success: false,
+                message: "Transaction not found"
+            })
+        }
+
+        //check if this donor is part of tran
+        if (transaction.donorId.toString() !== donorId) {
+            return res.status(401).json({
+                success: false,
+                message: "You are not authorized to update this transaction"
+            })
+        }
+
+        //get donor info
+        const donor = await Donor.findById(donorId);
+        if (!donor) {
+            return res.status(401).json({
+                success: false,
+                message: "Donor does not exist"
+            })
+        }
+
+        if (status === 'approved') {
+            const updatedTransaction = await Transaction.findByIdAndUpdate(
+                transactionId,
+                { status: 'approved' },
+                { new: true }
+            );
+
+            // Notify receiver about rejection
+            await createNotification(
+                req,
+                transaction.receiverId,
+                'Request Rejected',
+                `${donor.name} has accepted your request for: ${transaction.itemId.name}`,
+                'request_rejected'
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: 'Transaction rejected successfully',
+                transaction: updatedTransaction
+            });
+        }
+
+        if (status === 'rejected') {
+            const updatedTransaction = await Transaction.findByIdAndUpdate(
+                transactionId,
+                { status: 'rejected' },
+                { new: true }
+            );
+
+            // Notify receiver about rejection
+            await createNotification(
+                req,
+                transaction.receiverId,
+                'Request Rejected',
+                `${donor.name} has rejected your request for: ${transaction.itemId.name}`,
+                'request_rejected'
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: 'Transaction rejected successfully',
+                transaction: updatedTransaction
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update donation',
+            error: error.message
+        });
+    }
+}
+
 // Donor initiates a donation for a specific request
 export const initiateItemDonation = async (req, res) => {
     try {
@@ -78,8 +218,8 @@ export const initiateItemDonation = async (req, res) => {
             });
         }
         const category = item.category;
-        const request = await Request.findOne({receiverId:receiverId, category:category}).populate('receiverId');
-        
+
+        const request = await Request.findOne({ receiverId: receiverId, category: category }).populate('receiverId');
         if (!request) {
             return res.status(404).json({
                 success: false,
@@ -127,20 +267,9 @@ export const initiateItemDonation = async (req, res) => {
         // Remove the request from receiver's requestList
         await Receiver.findByIdAndUpdate(
             receiverId,
-            { $pull: { requestList: request._id} }
+            { $pull: { requestList: request._id } }
         );
 
-        // Delete the request
-        await Request.findByIdAndDelete(request._id);
-
-        // Remove the item from donor's donationList
-        await Donor.findByIdAndUpdate(
-            donorId,
-            { $push: { donationList: itemId } }
-        );
-
-        // Delete the item
-        await Item.findByIdAndDelete(itemId);
 
         res.status(201).json({
             success: true,
@@ -172,7 +301,7 @@ export const updateTransactionStatus = async (req, res) => {
         }
         const donor = await Donor.findById(transaction.donorId);
         const item = await Item.findById(transaction.itemId);
-        const receiver = await Receiver.findById(transaction.receiverId);   
+        const receiver = await Receiver.findById(transaction.receiverId);
 
         // Check if donor owns the transaction
         if (adminId !== process.env.ADMIN_ID) {
@@ -317,7 +446,7 @@ export const getDonorTransactions = async (req, res) => {
         const donorId = req.userId;
 
         // Find all transactions by donor ID
-        const transactions = await Transaction.find({ donorId:donorId })
+        const transactions = await Transaction.find({ donorId: donorId })
             .populate('itemId')
             .populate('receiverId', 'name email phone')
             .sort({ requestDate: -1 });
@@ -410,7 +539,7 @@ export default {
     getReceiverTransactions,
     getTransactionById,
     initiateItemDonation,
-    approveRequest,
-    rejectRequest,
+    // approveRequest,
+    // rejectRequest,
     requestCategory
 }; 

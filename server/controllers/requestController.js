@@ -11,6 +11,21 @@ export const createRequest = async (req, res) => {
         const { message, category, location } = req.body;
         const receiverId = req.userId;
 
+        //check if similar request exists
+        const existingRequest = await Request.findOne({
+            category: category,
+            location: location,
+            receiverId: receiverId
+        });
+
+        if (existingRequest) {
+            return res.status(400).json({
+                success: false,
+                message: 'You have already requested for this category'
+            });
+        }
+
+
         // Create new request (general request without specific item)
         const request = await Request.create({
             message,
@@ -24,7 +39,7 @@ export const createRequest = async (req, res) => {
             receiverId,
             { $push: { requestList: request._id } }
         );
-       
+
         // No matching items found
         res.status(201).json({
             success: true,
@@ -45,7 +60,7 @@ export const getAllRequests = async (req, res) => {
     try {
         const requests = await Request.find().populate('receiverId', 'message category');
         const donorId = req.userId;
-        if(!donorId) {
+        if (!donorId) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Not a donor'
@@ -93,7 +108,7 @@ export const getRequestById = async (req, res) => {
         const { requestId } = req.body;
         const receiverId = req.userId;
         // Find request by ID
-        const request = await Request.findOne({receiverId:receiverId,requestId:requestId}).populate('receiverId', 'message category');
+        const request = await Request.findOne({ receiverId: receiverId, requestId: requestId }).populate('receiverId', 'message category');
         if (!request) {
             return res.status(404).json({
                 success: false,

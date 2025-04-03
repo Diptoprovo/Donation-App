@@ -33,7 +33,7 @@ const transactionSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'on the way', 'delivered'],
+        enum: ['approved', 'pending', 'on the way', 'delivered', 'rejected'],
         required: true,
         default: 'pending'
     }

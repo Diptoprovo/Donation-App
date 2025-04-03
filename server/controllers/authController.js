@@ -10,7 +10,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const registerDonor = async (req, res) => {
     try {
         const { name, email, password, address, phone } = req.body;
-        
+
         // Check if user already exists
         const existingDonor = await Donor.findOne({ email });
         if (existingDonor) {
@@ -19,11 +19,11 @@ export const registerDonor = async (req, res) => {
                 message: 'Email is already registered'
             });
         }
-        
+
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        
+
         // Create new donor
         const donor = await Donor.create({
             name,
@@ -33,13 +33,13 @@ export const registerDonor = async (req, res) => {
             phone,
             donationList: []
         });
-        
+
         // Generate JWT token
         const token = generateToken(donor._id, 'donor');
-        
+
         // Set token in cookie
         setTokenCookie(res, token);
-        
+
         res.status(201).json({
             success: true,
             message: 'Donor registered successfully',
@@ -63,7 +63,7 @@ export const registerDonor = async (req, res) => {
 export const registerReceiver = async (req, res) => {
     try {
         const { name, email, password, address, phone } = req.body;
-        
+
         // Check if user already exists
         const existingReceiver = await Receiver.findOne({ email });
         if (existingReceiver) {
@@ -72,11 +72,11 @@ export const registerReceiver = async (req, res) => {
                 message: 'Email is already registered'
             });
         }
-        
+
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        
+
         // Create new receiver
         const receiver = await Receiver.create({
             name,
@@ -86,13 +86,13 @@ export const registerReceiver = async (req, res) => {
             phone,
             requestList: []
         });
-        
+
         // Generate JWT token
         const token = generateToken(receiver._id, 'receiver');
-        
+
         // Set token in cookie
         setTokenCookie(res, token);
-        
+
         res.status(201).json({
             success: true,
             message: 'Receiver registered successfully',
@@ -116,9 +116,9 @@ export const registerReceiver = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password, userType } = req.body;
-        
+
         let user;
-        
+
         // Find user based on type
         if (userType === 'donor') {
             user = await Donor.findOne({ email });
@@ -130,7 +130,7 @@ export const login = async (req, res) => {
                 message: 'Invalid user type'
             });
         }
-        
+
         // Check if user exists
         if (!user) {
             return res.status(401).json({
@@ -138,7 +138,7 @@ export const login = async (req, res) => {
                 message: 'Invalid email or password'
             });
         }
-        
+
         // Check if password matches
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -147,13 +147,13 @@ export const login = async (req, res) => {
                 message: 'Invalid email or password'
             });
         }
-        
+
         // Generate JWT token
         const token = generateToken(user._id, userType);
-        
+
         // Set token in cookie
         setTokenCookie(res, token);
-        
+
         res.status(200).json({
             success: true,
             message: 'Login successful',
@@ -177,29 +177,29 @@ export const login = async (req, res) => {
 export const googleAuth = async (req, res) => {
     try {
         const { token, userType } = req.body;
-        
+
         // Verify Google token
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID
         });
-        
+
         const { name, email, picture } = ticket.getPayload();
-        
+
         let user;
         let newUser = false;
-        
+
         // Check if user exists based on type
         if (userType === 'donor') {
             user = await Donor.findOne({ email });
-            
+
             // If user doesn't exist, create a new donor
             if (!user) {
                 // Create a random password for OAuth users
                 const randomPassword = Math.random().toString(36).slice(-8);
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(randomPassword, salt);
-                
+
                 user = await Donor.create({
                     name,
                     email,
@@ -208,19 +208,19 @@ export const googleAuth = async (req, res) => {
                     phone: '',
                     donationList: []
                 });
-                
+
                 newUser = true;
             }
         } else if (userType === 'receiver') {
             user = await Receiver.findOne({ email });
-            
+
             // If user doesn't exist, create a new receiver
             if (!user) {
                 // Create a random password for OAuth users
                 const randomPassword = Math.random().toString(36).slice(-8);
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(randomPassword, salt);
-                
+
                 user = await Receiver.create({
                     name,
                     email,
@@ -229,7 +229,7 @@ export const googleAuth = async (req, res) => {
                     phone: '',
                     requestList: []
                 });
-                
+
                 newUser = true;
             }
         } else {
@@ -238,13 +238,13 @@ export const googleAuth = async (req, res) => {
                 message: 'Invalid user type'
             });
         }
-        
+
         // Generate JWT token
         const jwtToken = generateToken(user._id, userType);
-        
+
         // Set token in cookie
         setTokenCookie(res, jwtToken);
-        
+
         res.status(200).json({
             success: true,
             message: newUser ? 'Registration successful' : 'Login successful',
@@ -272,7 +272,7 @@ export const logout = (req, res) => {
         httpOnly: true,
         expires: new Date(0)
     });
-    
+
     res.status(200).json({
         success: true,
         message: 'Logged out successfully'
@@ -283,7 +283,7 @@ export const logout = (req, res) => {
 export const getProfile = async (req, res) => {
     try {
         const user = req.user;
-        
+
         // Return user profile without password
         res.status(200).json({
             success: true,
@@ -309,7 +309,7 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const { name, address, phone } = req.body;
-        
+
         // Update user profile based on user type
         if (req.userType === 'donor') {
             await Donor.findByIdAndUpdate(req.userId, {
@@ -324,7 +324,7 @@ export const updateProfile = async (req, res) => {
                 phone
             });
         }
-        
+
         res.status(200).json({
             success: true,
             message: 'Profile updated successfully'
