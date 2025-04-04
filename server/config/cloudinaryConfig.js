@@ -10,9 +10,10 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'donation-app',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-  },
+      folder: 'donation-app/items',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      transformation: [{ width: 800, height: 800, crop: 'limit' }]
+  }
 });
 
 export { cloudinary, storage };
