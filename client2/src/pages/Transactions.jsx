@@ -14,7 +14,7 @@ const Transactions = () => {
   const filters = [
     { id: 'all', name: 'All Transactions' },
     { id: 'pending', name: 'Pending' },
-    { id: 'accepted', name: 'Accepted' },
+    { id: 'approved', name: 'Approved' },
     { id: 'completed', name: 'Completed' },
     { id: 'rejected', name: 'Rejected' }
   ];

@@ -31,7 +31,8 @@ const TransactionCard = ({ transaction = {} }) => {
   const updateTransactionStatus = async (newStatus) => {
     try {
       setIsUpdating(true);
-      const response = await api.put(`/transaction/${transaction._id}`, {
+      const response = await api.put(`/transaction/donor-update`, {
+        transactionId: transaction._id,
         status: newStatus
       });
 
@@ -74,7 +75,7 @@ const TransactionCard = ({ transaction = {} }) => {
           </div>
 
           <span className={`${getStatusBadgeColor(status)} text-xs px-2 py-1 rounded`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {status && (status.charAt(0).toUpperCase() + status.slice(1))}
           </span>
         </div>
 
@@ -120,7 +121,7 @@ const TransactionCard = ({ transaction = {} }) => {
         {isDonor && status === 'pending' && (
           <div className="flex space-x-2">
             <button
-              onClick={() => updateTransactionStatus('accepted')}
+              onClick={() => updateTransactionStatus('approved')}
               disabled={isUpdating}
               className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
             >
