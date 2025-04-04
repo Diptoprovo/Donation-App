@@ -59,7 +59,7 @@ const Dashboard = () => {
           {user ? `Welcome, ${user.name}` : 'Dashboard'}
         </h1>
         <p className="text-gray-600">
-          {user?.role === 'donor'
+          {user?.type === 'donor'
             ? 'Manage your donations and requests'
             : 'Browse and request available items'}
         </p>
@@ -78,7 +78,7 @@ const Dashboard = () => {
             Overview
           </button>
 
-          {user?.role === 'donor' && (
+          {user?.type === 'donor' && (
             <button
               onClick={() => setActiveTab('my-items')}
               className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'my-items'
@@ -129,7 +129,7 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <p><span className="font-medium">Name:</span> {user?.name}</p>
                   <p><span className="font-medium">Email:</span> {user?.email}</p>
-                  <p><span className="font-medium">Role:</span> {user?.role === 'donor' ? 'Donor' : 'Receiver'}</p>
+                  <p><span className="font-medium">Role:</span> {user?.type === 'donor' ? 'Donor' : 'Receiver'}</p>
                   <p><span className="font-medium">Address:</span> {user?.address}</p>
                 </div>
               </div>
@@ -137,9 +137,9 @@ const Dashboard = () => {
               {/* Statistics Card */}
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold mb-4">
-                  {user?.role === 'donor' ? 'Donation Stats' : 'Request Stats'}
+                  {user?.type === 'donor' ? 'Donation Stats' : 'Request Stats'}
                 </h2>
-                {user?.role === 'donor' ? (
+                {user?.type === 'donor' ? (
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Total Items</p>
@@ -185,7 +185,7 @@ const Dashboard = () => {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
                 <div className="space-y-3">
-                  {user?.role === 'donor' ? (
+                  {user?.type === 'donor' ? (
                     <>
                       <Link
                         to="/upload"
@@ -222,7 +222,7 @@ const Dashboard = () => {
           )}
 
           {/* My Items Tab (Donor only) */}
-          {activeTab === 'my-items' && user?.role === 'donor' && (
+          {activeTab === 'my-items' && user?.type === 'donor' && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">My Donation Items</h2>
@@ -258,13 +258,13 @@ const Dashboard = () => {
           {activeTab === 'transactions' && (
             <div>
               <h2 className="text-xl font-semibold mb-6">
-                {user?.role === 'donor' ? 'Donation Requests' : 'My Requests'}
+                {user?.type === 'donor' ? 'Donation Requests' : 'My Requests'}
               </h2>
 
               {transactions.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
                   <p className="text-gray-600 mb-4">
-                    {user?.role === 'donor'
+                    {user?.type === 'donor'
                       ? "You don't have any requests for your items yet."
                       : "You haven't requested any items yet."}
                   </p>
@@ -272,7 +272,7 @@ const Dashboard = () => {
                     to="/"
                     className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
                   >
-                    {user?.role === 'donor' ? 'Upload More Items' : 'Browse Available Items'}
+                    {user?.type === 'donor' ? 'Upload More Items' : 'Browse Available Items'}
                   </Link>
                 </div>
               ) : (
