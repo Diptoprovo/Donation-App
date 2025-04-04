@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { useApp } from './AppContext';
+import AppContext, { useApp } from './AppContext';
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const { user } = useApp() || { user: null };
+  const appContext = useContext(AppContext);
+  const user = appContext?.user;
 
   useEffect(() => {
     // Connect to socket server

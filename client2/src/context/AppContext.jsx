@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // Create context
 const AppContext = createContext();
@@ -26,6 +27,18 @@ export const AppProvider = ({ children }) => {
     withCredentials: true,
   });
 
+  // Setup response interceptor to handle errors
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        setUser(null);
+        // Optional: redirect to login
+      }
+      return Promise.reject(error);
+    }
+  );
+
   // Check if user is authenticated
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -35,6 +48,7 @@ export const AppProvider = ({ children }) => {
         setUser(response.data);
       } catch (err) {
         setUser(null);
+        console.log("Not logged in or session expired");
       } finally {
         setLoading(false);
       }
@@ -49,9 +63,12 @@ export const AppProvider = ({ children }) => {
       setLoading(true);
       const response = await api.post(`/auth/register/${userType}`, userData);
       setUser(response.data);
+      toast.success("Registration successful!");
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const errorMessage = err.response?.data?.message || 'Registration failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -63,9 +80,12 @@ export const AppProvider = ({ children }) => {
       setLoading(true);
       const response = await api.post('/auth/login', credentials);
       setUser(response.data);
+      toast.success("Login successful!");
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      const errorMessage = err.response?.data?.message || 'Login failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -77,8 +97,11 @@ export const AppProvider = ({ children }) => {
       setLoading(true);
       await api.post('/auth/logout');
       setUser(null);
+      toast.info("Logged out");
     } catch (err) {
-      setError(err.response?.data?.message || 'Logout failed');
+      const errorMessage = err.response?.data?.message || 'Logout failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,9 +112,12 @@ export const AppProvider = ({ children }) => {
       setLoading(true);
       const response = await api.put('/auth/profile', userData);
       setUser(response.data);
+      toast.success("Profile updated successfully");
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Profile update failed');
+      const errorMessage = err.response?.data?.message || 'Profile update failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -105,8 +131,10 @@ export const AppProvider = ({ children }) => {
       setItems(response.data);
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch items');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Failed to fetch items';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      return [];
     }
   };
 
@@ -136,9 +164,12 @@ export const AppProvider = ({ children }) => {
       });
       
       setItems(prev => [...prev, response.data]);
+      toast.success("Item uploaded successfully");
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Item upload failed');
+      const errorMessage = err.response?.data?.message || 'Item upload failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -152,8 +183,10 @@ export const AppProvider = ({ children }) => {
       setTransactions(response.data);
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch transactions');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Failed to fetch transactions';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      return [];
     }
   };
 
@@ -162,9 +195,12 @@ export const AppProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await api.post('/request', requestData);
+      toast.success("Request sent successfully");
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Request creation failed');
+      const errorMessage = err.response?.data?.message || 'Request creation failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
