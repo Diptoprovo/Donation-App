@@ -51,7 +51,7 @@ const NavBar = () => {
                   Dashboard
                 </Link>
                 <Link
-                  to="/upload"
+                  to={user.type == "donor" ? '/upload' : '/newreq'}
                   className="hover:text-blue-200 transition-colors"
                 >
                   {user.type == "donor" ? "Donate Item" : "Request Item"}
