@@ -208,6 +208,20 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const initiateTranRecv = async (tranData) => {
+    try {
+      const { data } = await api.post('/transaction/new', tranData);
+      if (data.success) {
+        toast.success(error.message);
+      } else {
+        toast.error(error.message);
+      }
+      return data.success;
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
   // Request functions
   const createRequest = async (requestData) => {
     try {
@@ -250,6 +264,7 @@ export const AppProvider = ({ children }) => {
     // Transactions
     transactions,
     getTransactions,
+    initiateTranRecv,
 
     // Requests
     createRequest,

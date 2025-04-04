@@ -6,7 +6,7 @@ const ItemCard = ({ item = {} }) => {
     return <div className="bg-white rounded-lg shadow-md p-4">Invalid item data</div>;
   }
 
-  const { createRequest, user } = useApp();
+  const { createRequest, user, initiateTranRecv } = useApp();
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -26,9 +26,9 @@ const ItemCard = ({ item = {} }) => {
 
     try {
       setIsRequesting(true);
-      await createRequest({
+      await initiateTranRecv({
         itemId: item._id,
-        message: message
+        donorId: item.donorId._id
       });
       setShowModal(false);
       setMessage('');
