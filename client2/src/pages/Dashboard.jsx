@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [myRequests, setMyRequests] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,8 +33,11 @@ const Dashboard = () => {
 
         if (user?.type === "receiver") {
           const { data } = await api.get("/item");
-          console.log(data.items);
           setAllItems(data.items);
+
+          // Fetch receiver's requests
+          const requestsResponse = await api.get("/receiver/requests");
+          setMyRequests(requestsResponse.data.requests);
         }
       } catch (err) {
         setError("Failed to load dashboard data");
@@ -104,12 +108,24 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("all-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-items"
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "all-items"
                 ? "border-b-2 border-blue-600 text-blue-600"
                 : "text-gray-500 hover:text-gray-700"
                 }`}
             >
               All Items
+            </button>
+          )}
+
+          {user?.type === "receiver" && (
+            <button
+              onClick={() => setActiveTab("my-requests")}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-requests"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
+            >
+              My Requests
             </button>
           )}
 
@@ -353,6 +369,33 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {allItems.map((item) => (
                     <ItemCard key={item._id} item={item} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* My Requests Tab (Receiver only) */}
+          {activeTab === "my-requests" && user?.type === "receiver" && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">My Requests</h2>
+                <Link
+                  to="/newreq"
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
+                >
+                  Make New Request
+                </Link>
+              </div>
+
+              {myRequests.length === 0 ? (
+                <div className="bg-white p-6 rounded-lg shadow text-center">
+                  <p className="text-gray-600 mb-4">You haven't made any requests yet.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {myRequests.map((request) => (
+                    <RequestCard key={request._id} item={request} />
                   ))}
                 </div>
               )}
