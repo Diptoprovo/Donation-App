@@ -331,7 +331,7 @@ const Dashboard = () => {
           {activeTab === "requests" && user?.type === "donor" && (
             <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">My Donation Items</h2>
+                <h2 className="text-xl font-semibold">All requests</h2>
               </div>
 
               {requests.length === 0 ? (

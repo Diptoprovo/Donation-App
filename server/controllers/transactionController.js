@@ -101,11 +101,13 @@ export const initiateTransaction = async (req, res) => {
                 message: "Donor or Receiver not found"
             })
         }
-        await notifyInitiationTransaction(
+        await createNotification(
             req,
-            donorId,
-            receiver.name
-        )
+            donor._id,
+            'Listed product requested',
+            `${receiver.name} has requested your product ${item.name}`,
+            'donation_request'
+        );
 
         return res.status(200).json({
             success: true,
@@ -167,9 +169,9 @@ export const approveOrRejectRequest = async (req, res) => {
             await createNotification(
                 req,
                 transaction.receiverId,
-                'Request Rejected',
+                'Request Accepted',
                 `${donor.name} has accepted your request for: ${transaction.itemId.name}`,
-                'request_rejected'
+                'request_accepted'
             );
 
             return res.status(200).json({

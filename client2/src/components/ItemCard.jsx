@@ -62,7 +62,6 @@ const ItemCard = ({ item = {} }) => {
   const isDonor = user && user._id === item.donorId;
   // Check if the user is a receiver (can request items)
   const isReceiver = user && user.type === 'receiver';
-  console.log(item);
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Item Image Carousel */}
