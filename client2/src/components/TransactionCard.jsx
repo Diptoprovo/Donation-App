@@ -68,7 +68,7 @@ const TransactionCard = ({ transaction = {} }) => {
             <p className="text-sm text-gray-600">
               {isDonor ? 'Requested by: ' : 'Donated by: '}
               <span className="font-medium">
-                {isDonor ? transaction.receiverName || 'Unknown Receiver' : transaction.donorId.name || 'Unknown Donor'}
+                {isDonor ? transaction.receiverId.name || 'Unknown Receiver' : transaction.donorId.name || 'Unknown Donor'}
               </span>
             </p>
           </div>
