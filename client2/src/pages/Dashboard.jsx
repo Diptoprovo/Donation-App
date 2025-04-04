@@ -24,8 +24,8 @@ const Dashboard = () => {
           const { data } = await api.get("/donor/items");
           setMyItems(data.items);
         }
-        if (user?.type === 'receiver') {
-          const { data } = await api.get('/item');
+        if (user?.type === "receiver") {
+          const { data } = await api.get("/item");
           console.log(data.items);
           setAllItems(data.items);
         }
@@ -97,7 +97,7 @@ const Dashboard = () => {
               My Items
             </button>
           )}
-          {user?.type === 'receiver' && (
+          {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("all-items")}
               className={`px-6 py-3 font-medium text-sm focus:outline-none ${
@@ -121,13 +121,14 @@ const Dashboard = () => {
             Transactions
           </button>
 
-          {user?.type === 'donor' && (
+          {user?.type === "donor" && (
             <button
-              onClick={() => setActiveTab('requests')}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'requests'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
+              onClick={() => setActiveTab("requests")}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "requests"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               Requests
             </button>
@@ -248,7 +249,7 @@ const Dashboard = () => {
                         Donate New Item
                       </Link>
                       <button
-                        onClick={() => setActiveTab('requests')}
+                        onClick={() => setActiveTab("requests")}
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"
                       >
                         Browse All Requests
@@ -257,7 +258,7 @@ const Dashboard = () => {
                   ) : (
                     <>
                       <button
-                        onClick={() => setActiveTab('all-items')}
+                        onClick={() => setActiveTab("all-items")}
                         className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition-colors"
                       >
                         Browse Available Items
@@ -310,21 +311,19 @@ const Dashboard = () => {
             </div>
           )}
 
-          {activeTab === 'requests' && user?.type === 'donor' && (
+          {activeTab === "requests" && user?.type === "donor" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">My Donation Items</h2>
-
               </div>
 
               {requests.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
                   <p className="text-gray-600 mb-4">No requests.</p>
-
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {requests.map(item => (
+                  {requests.map((item) => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>
