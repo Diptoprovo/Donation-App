@@ -196,9 +196,9 @@ export const AppProvider = ({ children }) => {
   const getTransactions = async () => {
     try {
       console.log(user.type);
-      const { data } = await api.get(`/donor/transactions`);
+      const { data } = await api.get(`/${user.type}/transactions`);
       setTransactions(data.transactions);
-      return response.data;
+      return data.transactions;
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || "Failed to fetch transactions";

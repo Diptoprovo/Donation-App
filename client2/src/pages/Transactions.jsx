@@ -24,7 +24,8 @@ const Transactions = () => {
       try {
         setLoading(true);
         const data = await getTransactions();
-        setTransactions(data || []);
+        console.log(data)
+        setTransactions(data);
       } catch (err) {
         setError('Failed to load transactions');
         console.error(err);
@@ -34,7 +35,7 @@ const Transactions = () => {
     };
 
     fetchTransactions();
-  }, [getTransactions]);
+  }, []);
 
   // Filter transactions based on active filter
   const filteredTransactions = activeFilter === 'all'
@@ -61,11 +62,10 @@ const Transactions = () => {
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-4 py-2 mx-1 rounded-md transition-colors ${
-                activeFilter === filter.id
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`px-4 py-2 mx-1 rounded-md transition-colors ${activeFilter === filter.id
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-700 hover:bg-gray-100'
+                }`}
             >
               {filter.name}
             </button>
@@ -91,9 +91,9 @@ const Transactions = () => {
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          
+
           <h2 className="text-xl font-semibold mt-4 mb-2">No transactions found</h2>
-          
+
           <p className="text-gray-600 mb-6">
             {activeFilter !== 'all'
               ? `You don't have any ${activeFilter} transactions.`
@@ -101,7 +101,7 @@ const Transactions = () => {
                 ? "You don't have any requests for your items yet."
                 : "You haven't requested any items yet."}
           </p>
-          
+
           <div>
             {user?.role === 'donor' ? (
               <Link

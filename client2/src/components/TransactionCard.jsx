@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const TransactionCard = ({ transaction = {} }) => {
-  if (!transaction || typeof transaction !== 'object' || !transaction.item) {
+  if (!transaction || typeof transaction !== 'object' || !transaction.itemId) {
     return <div className="bg-white rounded-lg shadow-md p-4">Invalid transaction data</div>;
   }
 
@@ -11,15 +11,15 @@ const TransactionCard = ({ transaction = {} }) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Check if the current user is the donor of this transaction
-  const isDonor = user && user._id === transaction.item.donorId;
-  
+  const isDonor = user && user._id === transaction.itemId.donorId;
+
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return '';
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric', 
-        month: 'long', 
+        year: 'numeric',
+        month: 'long',
         day: 'numeric'
       });
     } catch (err) {
@@ -34,7 +34,7 @@ const TransactionCard = ({ transaction = {} }) => {
       const response = await api.put(`/transaction/${transaction._id}`, {
         status: newStatus
       });
-      
+
       setStatus(response.data.status);
     } catch (error) {
       console.error('Error updating transaction:', error);
@@ -64,7 +64,7 @@ const TransactionCard = ({ transaction = {} }) => {
       <div className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">{transaction.item.name || 'Unnamed Item'}</h3>
+            <h3 className="text-lg font-semibold text-gray-800">{transaction.itemId.name || 'Unnamed Item'}</h3>
             <p className="text-sm text-gray-600">
               {isDonor ? 'Requested by: ' : 'Donated by: '}
               <span className="font-medium">
@@ -72,54 +72,50 @@ const TransactionCard = ({ transaction = {} }) => {
               </span>
             </p>
           </div>
-          
+
           <span className={`${getStatusBadgeColor(status)} text-xs px-2 py-1 rounded`}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </span>
         </div>
-        
+
         <div className="flex items-center mb-3">
           <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden mr-3">
-            {transaction.item.image && Array.isArray(transaction.item.image) && transaction.item.image.length > 0 ? (
-              <img 
-                src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${transaction.item.image[0]}`}
-                alt={transaction.item.name || 'Item image'}
+            {transaction.itemId.image && Array.isArray(transaction.itemId.image) && transaction.itemId.image.length > 0 ? (
+              <img
+                src={transaction.itemId.image[0]}
+                alt={transaction.itemId.name || 'Item image'}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null; 
-                  e.target.src = 'https://via.placeholder.com/150?text=No+Image';
-                }}
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500 text-xs">
-                No Image
+              <div className="flex items-center justify-center h-full bg-gray-200 text-gray-500">
+                No Image Available
               </div>
             )}
           </div>
-          
+
           <div>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Category:</span> {transaction.item.category || 'Uncategorized'}
+              <span className="font-medium">Category:</span> {transaction.itemId.category || 'Uncategorized'}
             </p>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Condition:</span> {transaction.item.condition || 'Unknown'}
+              <span className="font-medium">Condition:</span> {transaction.itemId.condition || 'Unknown'}
             </p>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Location:</span> {transaction.item.location || 'Not specified'}
+              <span className="font-medium">Location:</span> {transaction.itemId.location || 'Not specified'}
             </p>
           </div>
         </div>
-        
+
         {transaction.message && (
           <div className="mb-3 p-3 bg-gray-50 rounded text-sm text-gray-700">
             <span className="font-medium">Message:</span> {transaction.message}
           </div>
         )}
-        
+
         <p className="text-xs text-gray-500 mb-3">
           Requested on: {formatDate(transaction.createdAt)}
         </p>
-        
+
         {/* Action buttons for donor */}
         {isDonor && status === 'pending' && (
           <div className="flex space-x-2">
@@ -139,7 +135,7 @@ const TransactionCard = ({ transaction = {} }) => {
             </button>
           </div>
         )}
-        
+
         {/* Mark as completed button (for donor when accepted) */}
         {isDonor && status === 'accepted' && (
           <button
