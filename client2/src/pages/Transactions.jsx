@@ -19,20 +19,22 @@ const Transactions = () => {
     { id: 'rejected', name: 'Rejected' }
   ];
 
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const data = await getTransactions();
+      console.log(data)
+      setTransactions(data);
+    } catch (err) {
+      setError('Failed to load transactions');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        const data = await getTransactions();
-        console.log(data)
-        setTransactions(data);
-      } catch (err) {
-        setError('Failed to load transactions');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+
 
     fetchTransactions();
   }, []);
@@ -123,7 +125,7 @@ const Transactions = () => {
       ) : (
         <div className="space-y-4">
           {filteredTransactions.map(transaction => (
-            <TransactionCard key={transaction._id} transaction={transaction} />
+            <TransactionCard key={transaction._id} transaction={transaction} onApprove={() => fetchTransactions()} />
           ))}
         </div>
       )}

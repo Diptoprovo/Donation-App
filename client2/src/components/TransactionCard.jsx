@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
-const TransactionCard = ({ transaction = {} }) => {
+const TransactionCard = ({ transaction = {}, onApprove }) => {
   if (!transaction || typeof transaction !== 'object' || !transaction.itemId) {
     return <div className="bg-white rounded-lg shadow-md p-4">Invalid transaction data</div>;
   }
@@ -41,6 +41,7 @@ const TransactionCard = ({ transaction = {} }) => {
       console.error('Error updating transaction:', error);
     } finally {
       setIsUpdating(false);
+      onApprove();
     }
   };
 
