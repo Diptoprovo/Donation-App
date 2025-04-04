@@ -15,7 +15,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"))
 const ItemUpload = lazy(() => import("./pages/ItemUpload"))
 const Transactions = lazy(() => import("./pages/Transactions"))
 const NotFound = lazy(() => import("./pages/NotFound"))
-
+const NewRequest = lazy(() => import("./pages/NewRequest"))
 // Error Fallback component
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
   return (
@@ -58,6 +58,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/upload" element={<ItemUpload />} />
+                <Route path="/newreq" element={<NewRequest />} />
                 <Route path="/transactions" element={<Transactions />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

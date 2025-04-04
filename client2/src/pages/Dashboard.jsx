@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import ItemCard from '../components/ItemCard';
-import TransactionCard from '../components/TransactionCard';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import ItemCard from "../components/ItemCard";
+import TransactionCard from "../components/TransactionCard";
 
 const Dashboard = () => {
   const { user, api, getItems, getTransactions } = useApp();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [myItems, setMyItems] = useState([]);
   const [allItems, setAllItems] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -19,18 +19,17 @@ const Dashboard = () => {
         setLoading(true);
 
         // Fetch user's items
-        if (user?.type === 'donor') {
-          const { data } = await api.get('/donor/items');
+        if (user?.type === "donor") {
+          const { data } = await api.get("/donor/items");
           setMyItems(data.items);
         }
-        if (user?.type === 'receiver') {
-          const { data } = await api.get('/item');
+        if (user?.type === "receiver") {
+          const { data } = await api.get("/item");
           console.log(data.items);
-          setAllItems(data.items)
+          setAllItems(data.items);
         }
-
       } catch (err) {
-        setError('Failed to load dashboard data');
+        setError("Failed to load dashboard data");
         console.error(err);
       } finally {
         setLoading(false);
@@ -45,29 +44,29 @@ const Dashboard = () => {
   // Count items by status
   const itemCounts = {
     total: myItems.length,
-    available: myItems.filter(item => item.isAvailable).length,
-    donated: myItems.filter(item => !item.isAvailable).length
+    available: myItems.filter((item) => item.isAvailable).length,
+    donated: myItems.filter((item) => !item.isAvailable).length,
   };
 
   // Count transactions by status
   const transactionCounts = {
     total: transactions.length,
-    pending: transactions.filter(t => t.status === 'pending').length,
-    accepted: transactions.filter(t => t.status === 'accepted').length,
-    completed: transactions.filter(t => t.status === 'completed').length,
-    rejected: transactions.filter(t => t.status === 'rejected').length
+    pending: transactions.filter((t) => t.status === "pending").length,
+    accepted: transactions.filter((t) => t.status === "accepted").length,
+    completed: transactions.filter((t) => t.status === "completed").length,
+    rejected: transactions.filter((t) => t.status === "rejected").length,
   };
 
   return (
     <div>
       <div className="bg-white p-6 mb-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-2">
-          {user ? `Welcome, ${user.name}` : 'Dashboard'}
+          {user ? `Welcome, ${user.name}` : "Dashboard"}
         </h1>
         <p className="text-gray-600">
-          {user?.type === 'donor'
-            ? 'Manage your donations and requests'
-            : 'Browse and request available items'}
+          {user?.type === "donor"
+            ? "Manage your donations and requests"
+            : "Browse and request available items"}
         </p>
       </div>
 
@@ -75,44 +74,48 @@ const Dashboard = () => {
       <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
         <div className="flex border-b overflow-x-auto">
           <button
-            onClick={() => setActiveTab('overview')}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'overview'
-              ? 'border-b-2 border-blue-600 text-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-              }`}
+            onClick={() => setActiveTab("overview")}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+              activeTab === "overview"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
           >
             Overview
           </button>
 
-          {user?.type === 'donor' && (
+          {user?.type === "donor" && (
             <button
-              onClick={() => setActiveTab('my-items')}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'my-items'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
+              onClick={() => setActiveTab("my-items")}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "my-items"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               My Items
             </button>
           )}
-          {user?.type === 'receiver' && (
+          {user?.type === "receiver" && (
             <button
-              onClick={() => setActiveTab('all-items')}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'my-items'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
+              onClick={() => setActiveTab("all-items")}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "my-items"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               All Items
             </button>
           )}
 
           <button
-            onClick={() => setActiveTab('transactions')}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'transactions'
-              ? 'border-b-2 border-blue-600 text-blue-600'
-              : 'text-gray-500 hover:text-gray-700'
-              }`}
+            onClick={() => setActiveTab("transactions")}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+              activeTab === "transactions"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
           >
             Transactions
           </button>
@@ -138,25 +141,35 @@ const Dashboard = () => {
       {!loading && (
         <div>
           {/* Overview Tab */}
-          {activeTab === 'overview' && (
+          {activeTab === "overview" && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {/* User Info Card */}
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold mb-4">Your Profile</h2>
                 <div className="space-y-3">
-                  <p><span className="font-medium">Name:</span> {user?.name}</p>
-                  <p><span className="font-medium">Email:</span> {user?.email}</p>
-                  <p><span className="font-medium">Role:</span> {user?.type === 'donor' ? 'Donor' : 'Receiver'}</p>
-                  <p><span className="font-medium">Address:</span> {user?.address}</p>
+                  <p>
+                    <span className="font-medium">Name:</span> {user?.name}
+                  </p>
+                  <p>
+                    <span className="font-medium">Email:</span> {user?.email}
+                  </p>
+                  <p>
+                    <span className="font-medium">Role:</span>{" "}
+                    {user?.type === "donor" ? "Donor" : "Receiver"}
+                  </p>
+                  <p>
+                    <span className="font-medium">Address:</span>{" "}
+                    {user?.address}
+                  </p>
                 </div>
               </div>
 
               {/* Statistics Card */}
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold mb-4">
-                  {user?.type === 'donor' ? 'Donation Stats' : 'Request Stats'}
+                  {user?.type === "donor" ? "Donation Stats" : "Request Stats"}
                 </h2>
-                {user?.type === 'donor' ? (
+                {user?.type === "donor" ? (
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Total Items</p>
@@ -164,7 +177,9 @@ const Dashboard = () => {
                     </div>
                     <div className="bg-green-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Available</p>
-                      <p className="text-2xl font-bold">{itemCounts.available}</p>
+                      <p className="text-2xl font-bold">
+                        {itemCounts.available}
+                      </p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Donated</p>
@@ -172,27 +187,36 @@ const Dashboard = () => {
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Pending Requests</p>
-                      <p className="text-2xl font-bold">{transactionCounts.pending}</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.pending}
+                      </p>
                     </div>
                   </div>
                 ) : (
-
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Total Requests</p>
-                      <p className="text-2xl font-bold">{transactionCounts.total}</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.total}
+                      </p>
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Pending</p>
-                      <p className="text-2xl font-bold">{transactionCounts.pending}</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.pending}
+                      </p>
                     </div>
                     <div className="bg-green-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Accepted</p>
-                      <p className="text-2xl font-bold">{transactionCounts.accepted}</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.accepted}
+                      </p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Completed</p>
-                      <p className="text-2xl font-bold">{transactionCounts.completed}</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.completed}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -202,7 +226,7 @@ const Dashboard = () => {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
                 <div className="space-y-3">
-                  {user?.type === 'donor' ? (
+                  {user?.type === "donor" ? (
                     <>
                       <Link
                         to="/upload"
@@ -239,7 +263,7 @@ const Dashboard = () => {
           )}
 
           {/* My Items Tab (Donor only) */}
-          {activeTab === 'my-items' && user?.type === 'donor' && (
+          {activeTab === "my-items" && user?.type === "donor" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">My Donation Items</h2>
@@ -253,7 +277,9 @@ const Dashboard = () => {
 
               {myItems.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
-                  <p className="text-gray-600 mb-4">You haven't uploaded any items yet.</p>
+                  <p className="text-gray-600 mb-4">
+                    You haven't uploaded any items yet.
+                  </p>
                   <Link
                     to="/upload"
                     className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
@@ -263,7 +289,7 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {myItems.map(item => (
+                  {myItems.map((item) => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>
@@ -272,12 +298,12 @@ const Dashboard = () => {
           )}
 
           {/* All Items tab */}
-          {activeTab === 'all-items' && user?.type === 'receiver' && (
+          {activeTab === "all-items" && user?.type === "receiver" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">Listed Items</h2>
                 <Link
-                  to="/upload"
+                  to="/newreq"
                   className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
                 >
                   Make New Request
@@ -287,11 +313,10 @@ const Dashboard = () => {
               {allItems.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
                   <p className="text-gray-600 mb-4">No items listed yet.</p>
-
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {allItems.map(item => (
+                  {allItems.map((item) => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>
@@ -300,16 +325,16 @@ const Dashboard = () => {
           )}
 
           {/* Transactions Tab */}
-          {activeTab === 'transactions' && (
+          {activeTab === "transactions" && (
             <div>
               <h2 className="text-xl font-semibold mb-6">
-                {user?.type === 'donor' ? 'Donation Requests' : 'My Requests'}
+                {user?.type === "donor" ? "Donation Requests" : "My Requests"}
               </h2>
 
               {transactions.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
                   <p className="text-gray-600 mb-4">
-                    {user?.type === 'donor'
+                    {user?.type === "donor"
                       ? "You don't have any requests for your items yet."
                       : "You haven't requested any items yet."}
                   </p>
@@ -317,13 +342,18 @@ const Dashboard = () => {
                     to="/"
                     className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
                   >
-                    {user?.type === 'donor' ? 'Upload More Items' : 'Browse Available Items'}
+                    {user?.type === "donor"
+                      ? "Upload More Items"
+                      : "Browse Available Items"}
                   </Link>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {transactions.map(transaction => (
-                    <TransactionCard key={transaction._id} transaction={transaction} />
+                  {transactions.map((transaction) => (
+                    <TransactionCard
+                      key={transaction._id}
+                      transaction={transaction}
+                    />
                   ))}
                 </div>
               )}

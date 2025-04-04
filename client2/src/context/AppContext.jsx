@@ -1,12 +1,12 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Create context
 const AppContext = createContext();
 
 // API base URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export const AppProvider = ({ children }) => {
   // Authentication state
@@ -44,11 +44,11 @@ export const AppProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         setLoading(true);
-        const { data } = await api.get('/auth/profile');
+        const { data } = await api.get("/auth/profile");
         if (data.success) {
           setUser(data.user);
         } else {
-          console.log(data.message)
+          console.log(data.message);
         }
       } catch (err) {
         setUser(null);
@@ -70,7 +70,7 @@ export const AppProvider = ({ children }) => {
       toast.success("Registration successful!");
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed';
+      const errorMessage = err.response?.data?.message || "Registration failed";
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -82,12 +82,12 @@ export const AppProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/login', credentials);
+      const response = await api.post("/auth/login", credentials);
       setUser(response.data);
       toast.success("Login successful!");
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed';
+      const errorMessage = err.response?.data?.message || "Login failed";
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -99,11 +99,11 @@ export const AppProvider = ({ children }) => {
   const logout = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/logout');
+      await api.post("/auth/logout");
       setUser(null);
       toast.info("Logged out");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Logout failed';
+      const errorMessage = err.response?.data?.message || "Logout failed";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -114,12 +114,13 @@ export const AppProvider = ({ children }) => {
   const updateProfile = async (userData) => {
     try {
       setLoading(true);
-      const response = await api.put('/auth/profile', userData);
+      const response = await api.put("/auth/profile", userData);
       setUser(response.data);
       toast.success("Profile updated successfully");
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Profile update failed';
+      const errorMessage =
+        err.response?.data?.message || "Profile update failed";
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -131,14 +132,15 @@ export const AppProvider = ({ children }) => {
   // Item functions
   const getItems = async () => {
     try {
-      const { data } = await api.get('/item');
+      const { data } = await api.get("/item");
       const items = data.items;
-      console.log(items)
+      console.log(items);
       setItems(items);
       return items;
     } catch (err) {
-      console.error('Failed to fetch items:', err);
-      const errorMessage = err.response?.data?.message || 'Failed to fetch items';
+      console.error("Failed to fetch items:", err);
+      const errorMessage =
+        err.response?.data?.message || "Failed to fetch items";
       setError(errorMessage);
       // Only show toast for network or server errors, not for 401 which is expected when not logged in
       if (err.response?.status !== 401) {
@@ -154,30 +156,30 @@ export const AppProvider = ({ children }) => {
       const formData = new FormData();
 
       // Add text fields
-      Object.keys(itemData).forEach(key => {
-        if (key !== 'image') {
+      Object.keys(itemData).forEach((key) => {
+        if (key !== "image") {
           formData.append(key, itemData[key]);
         }
       });
 
       // Add images
       if (itemData.image && itemData.image.length) {
-        itemData.image.forEach(img => {
-          formData.append('image', img);
+        itemData.image.forEach((img) => {
+          formData.append("image", img);
         });
       }
 
-      const response = await api.post('/item', formData, {
+      const response = await api.post("/item", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      setItems(prev => [...prev, response.data]);
+      setItems((prev) => [...prev, response.data]);
       toast.success("Item uploaded successfully");
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Item upload failed';
+      const errorMessage = err.response?.data?.message || "Item upload failed";
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -194,7 +196,8 @@ export const AppProvider = ({ children }) => {
       setTransactions(data.transactions);
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to fetch transactions';
+      const errorMessage =
+        err.response?.data?.message || "Failed to fetch transactions";
       setError(errorMessage);
       toast.error(errorMessage);
       return [];
@@ -205,11 +208,12 @@ export const AppProvider = ({ children }) => {
   const createRequest = async (requestData) => {
     try {
       setLoading(true);
-      const response = await api.post('/request', requestData);
+      const response = await api.post("/request/create-request", requestData);
       toast.success("Request sent successfully");
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Request creation failed';
+      const errorMessage =
+        err.response?.data?.message || "Request creation failed";
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -247,7 +251,7 @@ export const AppProvider = ({ children }) => {
     createRequest,
 
     // Utility
-    api
+    api,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -257,7 +261,7 @@ export const AppProvider = ({ children }) => {
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };
