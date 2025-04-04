@@ -21,21 +21,22 @@ const AuthForm = ({ formType = 'login' }) => {
       ...formData,
       [name]: value
     });
-    
+
     // Clear errors when user types
     if (error) clearError();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setIsSubmitting(true);
-      
+
       if (formType === 'login') {
         await login({
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          userType: userType
         });
       } else {
         // Registration
@@ -47,7 +48,7 @@ const AuthForm = ({ formType = 'login' }) => {
           phone: formData.phone
         }, userType);
       }
-      
+
       // Redirect to dashboard on success
       navigate('/dashboard');
     } catch (err) {
@@ -63,11 +64,11 @@ const AuthForm = ({ formType = 'login' }) => {
       <h2 className="text-2xl font-bold text-center mb-6">
         {formType === 'login' ? 'Sign In' : 'Create Account'}
       </h2>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <span>{error}</span>
-          <button 
+          <button
             className="float-right font-bold"
             onClick={clearError}
           >
@@ -75,45 +76,44 @@ const AuthForm = ({ formType = 'login' }) => {
           </button>
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit}>
+        {/* User Type Selection */}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            I am a:
+          </label>
+          <div className="flex">
+            <button
+              type="button"
+              className={`flex-1 py-2 px-4 ${userType === 'donor'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
+                } rounded-l`}
+              onClick={() => setUserType('donor')}
+            >
+              Donor
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-2 px-4 ${userType === 'receiver'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
+                } rounded-r`}
+              onClick={() => setUserType('receiver')}
+            >
+              Receiver
+            </button>
+          </div>
+        </div>
         {formType === 'register' && (
           <>
-            {/* User Type Selection */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                I am a:
-              </label>
-              <div className="flex">
-                <button
-                  type="button"
-                  className={`flex-1 py-2 px-4 ${
-                    userType === 'donor' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-200 text-gray-700'
-                  } rounded-l`}
-                  onClick={() => setUserType('donor')}
-                >
-                  Donor
-                </button>
-                <button
-                  type="button"
-                  className={`flex-1 py-2 px-4 ${
-                    userType === 'receiver' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-200 text-gray-700'
-                  } rounded-r`}
-                  onClick={() => setUserType('receiver')}
-                >
-                  Receiver
-                </button>
-              </div>
-            </div>
-            
+
+
             {/* Name */}
             <div className="mb-4">
-              <label 
-                htmlFor="name" 
+              <label
+                htmlFor="name"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Full Name
@@ -128,11 +128,11 @@ const AuthForm = ({ formType = 'login' }) => {
                 required
               />
             </div>
-            
+
             {/* Address */}
             <div className="mb-4">
-              <label 
-                htmlFor="address" 
+              <label
+                htmlFor="address"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Address
@@ -147,11 +147,11 @@ const AuthForm = ({ formType = 'login' }) => {
                 required
               />
             </div>
-            
+
             {/* Phone */}
             <div className="mb-4">
-              <label 
-                htmlFor="phone" 
+              <label
+                htmlFor="phone"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Phone Number
@@ -168,11 +168,11 @@ const AuthForm = ({ formType = 'login' }) => {
             </div>
           </>
         )}
-        
+
         {/* Email */}
         <div className="mb-4">
-          <label 
-            htmlFor="email" 
+          <label
+            htmlFor="email"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
             Email Address
@@ -187,11 +187,11 @@ const AuthForm = ({ formType = 'login' }) => {
             required
           />
         </div>
-        
+
         {/* Password */}
         <div className="mb-6">
-          <label 
-            htmlFor="password" 
+          <label
+            htmlFor="password"
             className="block text-gray-700 text-sm font-bold mb-2"
           >
             Password
@@ -206,15 +206,15 @@ const AuthForm = ({ formType = 'login' }) => {
             required
           />
         </div>
-        
+
         {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           disabled={isSubmitting}
         >
-          {isSubmitting 
-            ? (formType === 'login' ? 'Signing In...' : 'Creating Account...') 
+          {isSubmitting
+            ? (formType === 'login' ? 'Signing In...' : 'Creating Account...')
             : (formType === 'login' ? 'Sign In' : 'Create Account')}
         </button>
       </form>
