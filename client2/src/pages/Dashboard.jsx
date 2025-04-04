@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [requests, setRequests] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +24,11 @@ const Dashboard = () => {
           const { data } = await api.get('/donor/items');
           setMyItems(data.items);
         }
+        if (user?.type === 'donor') {
+          const { data } = await api.get('/request/get-all-requests');
+          setRequests(data.requests);
+        }
+
         if (user?.type === 'receiver') {
           const { data } = await api.get('/item');
           console.log(data.items);
@@ -95,6 +101,9 @@ const Dashboard = () => {
               My Items
             </button>
           )}
+
+
+
           {user?.type === 'receiver' && (
             <button
               onClick={() => setActiveTab('all-items')}
@@ -116,6 +125,18 @@ const Dashboard = () => {
           >
             Transactions
           </button>
+
+          {user?.type === 'donor' && (
+            <button
+              onClick={() => setActiveTab('requests')}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'requests'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
+            >
+              Requests
+            </button>
+          )}
         </div>
       </div>
 
@@ -210,12 +231,12 @@ const Dashboard = () => {
                       >
                         Donate New Item
                       </Link>
-                      <Link
-                        to="/"
+                      <button
+                        onClick={() => setActiveTab('requests')}
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"
                       >
-                        Browse All Items
-                      </Link>
+                        Browse All Requests
+                      </button>
                     </>
                   ) : (
                     <>
@@ -264,6 +285,28 @@ const Dashboard = () => {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {myItems.map(item => (
+                    <ItemCard key={item._id} item={item} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'requests' && user?.type === 'donor' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">My Donation Items</h2>
+
+              </div>
+
+              {requests.length === 0 ? (
+                <div className="bg-white p-6 rounded-lg shadow text-center">
+                  <p className="text-gray-600 mb-4">No requests.</p>
+
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {requests.map(item => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>
