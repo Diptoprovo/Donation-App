@@ -13,7 +13,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Items state
   const [items, setItems] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -44,8 +44,12 @@ export const AppProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/auth/profile');
-        setUser(response.data);
+        const { data } = await api.get('/auth/profile');
+        if (data.success) {
+          setUser(data.user);
+        } else {
+          console.log(data.message)
+        }
       } catch (err) {
         setUser(null);
         console.log("Not logged in or session expired");
@@ -127,8 +131,9 @@ export const AppProvider = ({ children }) => {
   // Item functions
   const getItems = async () => {
     try {
-      const response = await api.get('/item');
-      const items = response.data || [];
+      const { data } = await api.get('/item');
+      const items = data.items;
+      console.log(items)
       setItems(items);
       return items;
     } catch (err) {
@@ -147,14 +152,14 @@ export const AppProvider = ({ children }) => {
     try {
       setLoading(true);
       const formData = new FormData();
-      
+
       // Add text fields
       Object.keys(itemData).forEach(key => {
         if (key !== 'image') {
           formData.append(key, itemData[key]);
         }
       });
-      
+
       // Add images
       if (itemData.image && itemData.image.length) {
         itemData.image.forEach(img => {
@@ -167,7 +172,7 @@ export const AppProvider = ({ children }) => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       setItems(prev => [...prev, response.data]);
       toast.success("Item uploaded successfully");
       return response.data;
@@ -227,19 +232,19 @@ export const AppProvider = ({ children }) => {
     logout,
     updateProfile,
     clearError,
-    
+
     // Items
     items,
     getItems,
     uploadItem,
-    
+
     // Transactions
     transactions,
     getTransactions,
-    
+
     // Requests
     createRequest,
-    
+
     // Utility
     api
   };

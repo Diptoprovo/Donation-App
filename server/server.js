@@ -15,7 +15,7 @@ import requestRouter from "./routes/requestRoutes.js";
 import transactionRouter from "./routes/transactionRoutes.js";
 
 const app = express();
-const httpServer = createServer(app);  
+const httpServer = createServer(app);
 const port = process.env.PORT || 4000;
 
 connectDB();
@@ -26,7 +26,6 @@ const allowedOrigins = [process.env.FRONTEND_URL];
 // app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(cors({
     origin: allowedOrigins, // Allow requests from your frontend
-    methods: 'GET,POST,PUT,DELETE',
     credentials: true // If you're using cookies or authentication
 }));
 app.use(express.json());

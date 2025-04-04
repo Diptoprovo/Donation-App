@@ -9,7 +9,7 @@ export const authenticateUser = async (req, res, next) => {
         const token = req.cookies.token;
 
         if (!token) {
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: 'Not authorized, no token'
             });
