@@ -150,43 +150,47 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const uploadItem = async (itemData) => {
-    try {
-      setLoading(true);
-      const formData = new FormData();
+  // const uploadItem = async (itemData) => {
+  //   try {
+  //     setLoading(true);
+  //     const formData = new FormData();
 
-      // Add text fields
-      Object.keys(itemData).forEach((key) => {
-        if (key !== "image") {
-          formData.append(key, itemData[key]);
-        }
-      });
+  //     // Add text fields
+  //     Object.keys(itemData).forEach((key) => {
+  //       if (key !== "image") {
+  //         formData.append(key, itemData[key]);
+  //       }
+  //     });
 
-      // Add images
-      if (itemData.image && itemData.image.length) {
-        itemData.image.forEach((img) => {
-          formData.append("image", img);
-        });
-      }
+  //     // Add images
+  //     if (itemData.image && itemData.image.length) {
+  //       itemData.image.forEach((img) => {
+  //         formData.append("image", img);
+  //       });
+  //     }
 
-      const response = await api.post("/item", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  //     const { data } = await api.post("/create-item", formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
 
-      setItems((prev) => [...prev, response.data]);
-      toast.success("Item uploaded successfully");
-      return response.data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || "Item upload failed";
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (data.success) {
+  //       setItems((prev) => [...prev, response.data]);
+  //       toast.success("Item uploaded successfully");
+  //     } else {
+  //       toast.error('Failed to upload')
+  //     }
+  //     return response.data;
+  //   } catch (err) {
+  //     const errorMessage = err.response?.data?.message || "Item upload failed";
+  //     setError(errorMessage);
+  //     toast.error(errorMessage);
+  //     throw err;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Transaction functions
   const getTransactions = async () => {
@@ -241,7 +245,7 @@ export const AppProvider = ({ children }) => {
     // Items
     items,
     getItems,
-    uploadItem,
+    // uploadItem,
 
     // Transactions
     transactions,

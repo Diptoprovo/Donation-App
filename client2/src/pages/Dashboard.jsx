@@ -24,6 +24,11 @@ const Dashboard = () => {
           const { data } = await api.get("/donor/items");
           setMyItems(data.items);
         }
+        if (user?.type === "donor") {
+          const { data } = await api.get("/request/get-all-requests");
+          setRequests(data.requests);
+        }
+
         if (user?.type === "receiver") {
           const { data } = await api.get("/item");
           console.log(data.items);
@@ -76,11 +81,10 @@ const Dashboard = () => {
         <div className="flex border-b overflow-x-auto">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-              activeTab === "overview"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "overview"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Overview
           </button>
@@ -88,11 +92,10 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("my-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "my-items"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-items"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               My Items
             </button>
@@ -100,11 +103,10 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("all-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "my-items"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-items"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               All Items
             </button>
@@ -112,11 +114,10 @@ const Dashboard = () => {
 
           <button
             onClick={() => setActiveTab("transactions")}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-              activeTab === "transactions"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "transactions"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Transactions
           </button>
@@ -124,11 +125,10 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("requests")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "requests"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "requests"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               Requests
             </button>
