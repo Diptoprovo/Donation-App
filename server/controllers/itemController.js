@@ -2,6 +2,7 @@ import Item from '../models/itemModel.js';
 import Donor from '../models/donorModel.js';
 import Request from '../models/requestModel.js';
 import Receiver from '../models/receiverModel.js';
+import { cloudinary } from '../config/cloudinaryConfig.js';
 import { notifyItemMatch, notifyNewItemForRequest } from '../utils/notificationUtils.js';
 
 // Create a new donation item [puts in both itemlist and donationlist of donor] [notifying the receivers]
@@ -13,7 +14,12 @@ export const createItem = async (req, res) => {
         // Handle image uploads - expects req.files from multer middleware
         let imageUrls = [];
         if (req.files && req.files.length > 0) {
-            imageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
+            for (const file of req.files) {
+                const result = await cloudinary.uploader.upload(file.path, {
+                    folder: 'donation-app/items'
+                });
+                imageUrls.push(result.secure_url);
+            }
         }
 
         // Create new item
@@ -56,8 +62,6 @@ export const createItem = async (req, res) => {
                     item.name,
                     item.category
                 );
-
-
             }
         }
 
