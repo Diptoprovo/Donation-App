@@ -59,12 +59,12 @@ const ItemCard = ({ item = {} }) => {
       {/* Item Image Carousel */}
       <div className="relative h-48 bg-gray-200">
         {item.image && Array.isArray(item.image) && item.image.length > 0 ? (
-          <img 
-            src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${item.image[0]}`} 
-            alt={item.name || 'Item image'} 
+          <img
+            src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${item.image[0]}`}
+            alt={item.name || 'Item image'}
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.target.onerror = null; 
+              e.target.onerror = null;
               e.target.src = 'https://via.placeholder.com/150?text=No+Image';
             }}
           />
@@ -73,18 +73,17 @@ const ItemCard = ({ item = {} }) => {
             No Image Available
           </div>
         )}
-        
+
         <div className="absolute top-0 right-0 m-2">
-          <span className={`text-xs px-2 py-1 rounded ${
-            item.condition === 'new' ? 'bg-green-500' : 
-            item.condition === 'fairly used' ? 'bg-yellow-500' : 
-            'bg-red-500'
-          } text-white`}>
+          <span className={`text-xs px-2 py-1 rounded ${item.condition === 'new' ? 'bg-green-500' :
+              item.condition === 'fairly used' ? 'bg-yellow-500' :
+                'bg-red-500'
+            } text-white`}>
             {item.condition || 'Unknown'}
           </span>
         </div>
       </div>
-      
+
       {/* Item Info */}
       <div className="p-4">
         <div className="flex justify-between items-start">
@@ -93,17 +92,17 @@ const ItemCard = ({ item = {} }) => {
             {item.category || 'Uncategorized'}
           </span>
         </div>
-        
+
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Location:</span> {item.location || 'Not specified'}
         </p>
-        
+
         {item.createdAt && (
           <p className="text-xs text-gray-500 mt-1">
             Posted on {formatDate(item.createdAt)}
           </p>
         )}
-        
+
         {/* Action Button */}
         <div className="mt-4">
           {isReceiver && !isDonor && item.isAvailable ? (
@@ -133,18 +132,18 @@ const ItemCard = ({ item = {} }) => {
               onClick={() => window.location.href = '/signin'}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
             >
-              Sign in to Request
+              Request
             </button>
           )}
         </div>
       </div>
-      
+
       {/* Request Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-xl font-semibold mb-4">Request Item: {item.name}</h3>
-            
+
             <form onSubmit={handleRequestItem}>
               <div className="mb-4">
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
@@ -160,7 +159,7 @@ const ItemCard = ({ item = {} }) => {
                   required
                 ></textarea>
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

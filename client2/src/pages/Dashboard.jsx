@@ -8,6 +8,7 @@ const Dashboard = () => {
   const { user, api, getItems, getTransactions } = useApp();
   const [activeTab, setActiveTab] = useState('overview');
   const [myItems, setMyItems] = useState([]);
+  const [allItems, setAllItems] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +22,11 @@ const Dashboard = () => {
         if (user?.type === 'donor') {
           const { data } = await api.get('/donor/items');
           setMyItems(data.items);
+        }
+        if (user?.type === 'receiver') {
+          const { data } = await api.get('/item');
+          console.log(data.items);
+          setAllItems(data.items)
         }
 
       } catch (err) {
@@ -87,6 +93,17 @@ const Dashboard = () => {
                 }`}
             >
               My Items
+            </button>
+          )}
+          {user?.type === 'receiver' && (
+            <button
+              onClick={() => setActiveTab('all-items')}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'my-items'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
+            >
+              All Items
             </button>
           )}
 
@@ -247,6 +264,34 @@ const Dashboard = () => {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {myItems.map(item => (
+                    <ItemCard key={item._id} item={item} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* All Items tab */}
+          {activeTab === 'all-items' && user?.type === 'receiver' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Listed Items</h2>
+                <Link
+                  to="/upload"
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
+                >
+                  Make New Request
+                </Link>
+              </div>
+
+              {allItems.length === 0 ? (
+                <div className="bg-white p-6 rounded-lg shadow text-center">
+                  <p className="text-gray-600 mb-4">No items listed yet.</p>
+
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {allItems.map(item => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>

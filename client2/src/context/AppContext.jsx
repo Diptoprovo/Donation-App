@@ -189,7 +189,8 @@ export const AppProvider = ({ children }) => {
   // Transaction functions
   const getTransactions = async () => {
     try {
-      const { data } = await api.get('/donor/transactions');
+      console.log(user.type);
+      const { data } = await api.get(`/donor/transactions`);
       setTransactions(data.transactions);
       return response.data;
     } catch (err) {
