@@ -16,16 +16,13 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch user's items
-        if (user?.role === 'donor') {
-          const response = await api.get('/donor/items');
-          setMyItems(response.data);
+        if (user?.type === 'donor') {
+          const { data } = await api.get('/donor/items');
+          setMyItems(data.items);
         }
-        
-        // Fetch transactions
-        const transactionsData = await getTransactions();
-        setTransactions(transactionsData);
+
       } catch (err) {
         setError('Failed to load dashboard data');
         console.error(err);
@@ -62,8 +59,8 @@ const Dashboard = () => {
           {user ? `Welcome, ${user.name}` : 'Dashboard'}
         </h1>
         <p className="text-gray-600">
-          {user?.role === 'donor' 
-            ? 'Manage your donations and requests' 
+          {user?.role === 'donor'
+            ? 'Manage your donations and requests'
             : 'Browse and request available items'}
         </p>
       </div>
@@ -73,35 +70,32 @@ const Dashboard = () => {
         <div className="flex border-b overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-              activeTab === 'overview'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'overview'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700'
+              }`}
           >
             Overview
           </button>
-          
+
           {user?.role === 'donor' && (
             <button
               onClick={() => setActiveTab('my-items')}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === 'my-items'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'my-items'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
             >
               My Items
             </button>
           )}
-          
+
           <button
             onClick={() => setActiveTab('transactions')}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-              activeTab === 'transactions'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === 'transactions'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700'
+              }`}
           >
             Transactions
           </button>
@@ -165,6 +159,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 ) : (
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Total Requests</p>
@@ -192,14 +187,14 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   {user?.role === 'donor' ? (
                     <>
-                      <Link 
-                        to="/upload" 
+                      <Link
+                        to="/upload"
                         className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition-colors"
                       >
                         Donate New Item
                       </Link>
-                      <Link 
-                        to="/" 
+                      <Link
+                        to="/"
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"
                       >
                         Browse All Items
@@ -207,14 +202,14 @@ const Dashboard = () => {
                     </>
                   ) : (
                     <>
-                      <Link 
-                        to="/" 
+                      <Link
+                        to="/"
                         className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition-colors"
                       >
                         Browse Available Items
                       </Link>
-                      <Link 
-                        to="/transactions" 
+                      <Link
+                        to="/transactions"
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"
                       >
                         View My Requests
