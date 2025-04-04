@@ -256,12 +256,12 @@ const Dashboard = () => {
                     </>
                   ) : (
                     <>
-                      <Link
-                        to="/"
+                      <button
+                        onClick={() => setActiveTab('all-items')}
                         className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition-colors"
                       >
                         Browse Available Items
-                      </Link>
+                      </button>
                       <Link
                         to="/transactions"
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"

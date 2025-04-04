@@ -10,6 +10,15 @@ const ItemCard = ({ item = {} }) => {
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev === 0 ? item.image.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev === item.image.length - 1 ? 0 : prev + 1));
+  };
 
   const handleRequestItem = async (e) => {
     e.preventDefault();
@@ -53,20 +62,16 @@ const ItemCard = ({ item = {} }) => {
   const isDonor = user && user._id === item.donorId;
   // Check if the user is a receiver (can request items)
   const isReceiver = user && user.role === 'receiver';
-
+  console.log(item);
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Item Image Carousel */}
       <div className="relative h-48 bg-gray-200">
         {item.image && Array.isArray(item.image) && item.image.length > 0 ? (
           <img
-            src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${item.image[0]}`}
+            src={item.image[currentIndex]}
             alt={item.name || 'Item image'}
             className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = 'https://via.placeholder.com/150?text=No+Image';
-            }}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-200 text-gray-500">
@@ -74,10 +79,25 @@ const ItemCard = ({ item = {} }) => {
           </div>
         )}
 
+
+        {/* Navigation Buttons */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
+        >
+          ◀
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
+        >
+          ▶
+        </button>
+
         <div className="absolute top-0 right-0 m-2">
           <span className={`text-xs px-2 py-1 rounded ${item.condition === 'new' ? 'bg-green-500' :
-              item.condition === 'fairly used' ? 'bg-yellow-500' :
-                'bg-red-500'
+            item.condition === 'fairly used' ? 'bg-yellow-500' :
+              'bg-red-500'
             } text-white`}>
             {item.condition || 'Unknown'}
           </span>
