@@ -280,12 +280,12 @@ const Dashboard = () => {
                       >
                         Browse Available Items
                       </button>
-                      <Link
-                        to="/transactions"
+                      <button
+                        onClick={() => setActiveTab("my-requests")}
                         className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-center py-2 px-4 rounded transition-colors"
                       >
                         View My Requests
-                      </Link>
+                      </button>
                     </>
                   )}
                 </div>
