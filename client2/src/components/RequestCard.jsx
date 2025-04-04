@@ -33,7 +33,7 @@ const RequestCard = ({ item = {} }) => {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
             {/* Item Image Carousel */}
-            <div className="relative h-48 bg-gray-200">
+            {/* <div className="relative h-48 bg-gray-200">
                 {item.image && Array.isArray(item.image) && item.image.length > 0 ? (
                     <img
                         src={item.image[currentIndex]}
@@ -47,29 +47,29 @@ const RequestCard = ({ item = {} }) => {
                 )}
 
 
-                {/* Navigation Buttons */}
-                <button
-                    onClick={prevSlide}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
-                >
-                    ◀
-                </button>
-                <button
-                    onClick={nextSlide}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
-                >
-                    ▶
-                </button>
+          
+            <button
+                onClick={prevSlide}
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
+            >
+                ◀
+            </button>
+            <button
+                onClick={nextSlide}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent  p-2 rounded-full hover:bg-opacity-90"
+            >
+                ▶
+            </button>
 
-                <div className="absolute top-0 right-0 m-2">
-                    <span className={`text-xs px-2 py-1 rounded ${item.condition === 'new' ? 'bg-green-500' :
-                        item.condition === 'fairly used' ? 'bg-yellow-500' :
-                            'bg-red-500'
-                        } text-white`}>
-                        {item.condition || 'Unknown'}
-                    </span>
-                </div>
+            <div className="absolute top-0 right-0 m-2">
+                <span className={`text-xs px-2 py-1 rounded ${item.condition === 'new' ? 'bg-green-500' :
+                    item.condition === 'fairly used' ? 'bg-yellow-500' :
+                        'bg-red-500'
+                    } text-white`}>
+                    {item.condition || 'Unknown'}
+                </span>
             </div>
+        </div> */}
 
             {/* Item Info */}
             <div className="p-4">
@@ -90,7 +90,7 @@ const RequestCard = ({ item = {} }) => {
                     </p>
                 )}
 
-                {/* Action Button */}
+                {/* Action Button
                 <div className="mt-4">
                     {isReceiver && !isDonor && item.isAvailable ? (
                         <button
@@ -122,11 +122,11 @@ const RequestCard = ({ item = {} }) => {
                             Request
                         </button>
                     )}
-                </div>
+                </div> */}
             </div>
 
 
-        </div>
+        </div >
     )
 }
 
