@@ -129,7 +129,7 @@ const Dashboard = () => {
             </button>
           )}
 
-          <button
+          {/* <button
             onClick={() => setActiveTab("transactions")}
             className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "transactions"
               ? "border-b-2 border-blue-600 text-blue-600"
@@ -137,7 +137,7 @@ const Dashboard = () => {
               }`}
           >
             Transactions
-          </button>
+          </button> */}
 
           {user?.type === "donor" && (
             <button
