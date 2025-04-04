@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item = {} }) => {
+  if (!item || typeof item !== 'object') {
+    return <div className="bg-white rounded-lg shadow-md p-4">Invalid item data</div>;
+  }
+
   const { createRequest, user } = useApp();
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState('');
@@ -33,11 +37,16 @@ const ItemCard = ({ item }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (err) {
+      return '';
+    }
   };
 
   // Check if user is a donor (can't request their own items)
@@ -49,11 +58,15 @@ const ItemCard = ({ item }) => {
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Item Image Carousel */}
       <div className="relative h-48 bg-gray-200">
-        {item.image && item.image.length > 0 ? (
+        {item.image && Array.isArray(item.image) && item.image.length > 0 ? (
           <img 
             src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${item.image[0]}`} 
-            alt={item.name} 
+            alt={item.name || 'Item image'} 
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null; 
+              e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-200 text-gray-500">
@@ -67,7 +80,7 @@ const ItemCard = ({ item }) => {
             item.condition === 'fairly used' ? 'bg-yellow-500' : 
             'bg-red-500'
           } text-white`}>
-            {item.condition}
+            {item.condition || 'Unknown'}
           </span>
         </div>
       </div>
@@ -75,14 +88,14 @@ const ItemCard = ({ item }) => {
       {/* Item Info */}
       <div className="p-4">
         <div className="flex justify-between items-start">
-          <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+          <h3 className="text-lg font-semibold text-gray-800">{item.name || 'Unnamed Item'}</h3>
           <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-            {item.category}
+            {item.category || 'Uncategorized'}
           </span>
         </div>
         
         <p className="text-sm text-gray-600 mt-2">
-          <span className="font-medium">Location:</span> {item.location}
+          <span className="font-medium">Location:</span> {item.location || 'Not specified'}
         </p>
         
         {item.createdAt && (

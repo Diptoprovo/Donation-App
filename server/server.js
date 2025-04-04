@@ -21,11 +21,16 @@ const port = process.env.PORT || 4000;
 connectDB();
 
 // Configure CORS
-// const allowedOrigins = [process.env.FRONTEND_URL];
-const allowedOrigins = [];
+const allowedOrigins = [process.env.FRONTEND_URL];
+// const allowedOrigins = [];
+// app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({
+    origin: allowedOrigins, // Allow requests from your frontend
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true // If you're using cookies or authentication
+}));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Serve static files
 app.use("/uploads", express.static("uploads"));
@@ -41,17 +46,25 @@ const io = new Server(httpServer, {
 // Store Socket.IO instance globally
 app.set("socketio", io);
 
+const users = new Map();
+
 // Handle Socket.IO connections
 io.on("connection", (socket) => {
     console.log("New client connected");
 
     socket.on("join", (userId) => {
+        users.set(userId, socket.id);
         socket.join(userId);
         console.log(`User ${userId} joined their notification room`);
     });
 
     socket.on("disconnect", () => {
-        console.log("Client disconnected");
+        users.forEach((id, user) => {
+            if (id === socket.id) {
+                users.delete(user);
+                console.log(`User ${user} disconnected`);
+            }
+        });
     });
 });
 

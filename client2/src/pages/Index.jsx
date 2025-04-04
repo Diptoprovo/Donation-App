@@ -25,7 +25,7 @@ const Index = () => {
       try {
         setLoading(true);
         const fetchedItems = await getItems();
-        setItems(fetchedItems);
+        setItems(fetchedItems || []);
       } catch (err) {
         setError('Failed to load donation items');
         console.error(err);
@@ -40,7 +40,7 @@ const Index = () => {
   // Filter items by category
   const filteredItems = activeCategory === 'all' 
     ? items 
-    : items.filter(item => item.category === activeCategory);
+    : (items || []).filter(item => item.category === activeCategory);
 
   return (
     <div>
@@ -99,13 +99,13 @@ const Index = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto"></div>
               <p className="mt-4 text-gray-600">Loading donation items...</p>
             </div>
-          ) : filteredItems.length === 0 ? (
+          ) : !filteredItems || filteredItems.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-gray-600">No donations available in this category at the moment.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredItems.map(item => (
+              {Array.isArray(filteredItems) && filteredItems.map(item => (
                 <ItemCard key={item._id} item={item} />
               ))}
             </div>

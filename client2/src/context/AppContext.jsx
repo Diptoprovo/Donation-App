@@ -128,12 +128,17 @@ export const AppProvider = ({ children }) => {
   const getItems = async () => {
     try {
       const response = await api.get('/item');
-      setItems(response.data);
-      return response.data;
+      const items = response.data || [];
+      setItems(items);
+      return items;
     } catch (err) {
+      console.error('Failed to fetch items:', err);
       const errorMessage = err.response?.data?.message || 'Failed to fetch items';
       setError(errorMessage);
-      toast.error(errorMessage);
+      // Only show toast for network or server errors, not for 401 which is expected when not logged in
+      if (err.response?.status !== 401) {
+        toast.error(errorMessage);
+      }
       return [];
     }
   };

@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
-const TransactionCard = ({ transaction }) => {
+const TransactionCard = ({ transaction = {} }) => {
+  if (!transaction || typeof transaction !== 'object' || !transaction.item) {
+    return <div className="bg-white rounded-lg shadow-md p-4">Invalid transaction data</div>;
+  }
+
   const { user, api } = useApp();
-  const [status, setStatus] = useState(transaction.status);
+  const [status, setStatus] = useState(transaction.status || 'pending');
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Check if the current user is the donor of this transaction
@@ -11,11 +15,16 @@ const TransactionCard = ({ transaction }) => {
   
   // Format date
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric'
-    });
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric'
+      });
+    } catch (err) {
+      return '';
+    }
   };
 
   // Handle transaction status update
@@ -55,11 +64,11 @@ const TransactionCard = ({ transaction }) => {
       <div className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">{transaction.item.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-800">{transaction.item.name || 'Unnamed Item'}</h3>
             <p className="text-sm text-gray-600">
               {isDonor ? 'Requested by: ' : 'Donated by: '}
               <span className="font-medium">
-                {isDonor ? transaction.receiverName : transaction.donorName}
+                {isDonor ? transaction.receiverName || 'Unknown Receiver' : transaction.donorName || 'Unknown Donor'}
               </span>
             </p>
           </div>
@@ -71,11 +80,15 @@ const TransactionCard = ({ transaction }) => {
         
         <div className="flex items-center mb-3">
           <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden mr-3">
-            {transaction.item.image && transaction.item.image.length > 0 ? (
+            {transaction.item.image && Array.isArray(transaction.item.image) && transaction.item.image.length > 0 ? (
               <img 
                 src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:4000'}/${transaction.item.image[0]}`}
-                alt={transaction.item.name}
+                alt={transaction.item.name || 'Item image'}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = 'https://via.placeholder.com/150?text=No+Image';
+                }}
               />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500 text-xs">
@@ -86,13 +99,13 @@ const TransactionCard = ({ transaction }) => {
           
           <div>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Category:</span> {transaction.item.category}
+              <span className="font-medium">Category:</span> {transaction.item.category || 'Uncategorized'}
             </p>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Condition:</span> {transaction.item.condition}
+              <span className="font-medium">Condition:</span> {transaction.item.condition || 'Unknown'}
             </p>
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Location:</span> {transaction.item.location}
+              <span className="font-medium">Location:</span> {transaction.item.location || 'Not specified'}
             </p>
           </div>
         </div>

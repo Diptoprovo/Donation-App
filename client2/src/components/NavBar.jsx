@@ -4,15 +4,19 @@ import { useApp } from '../context/AppContext';
 import { useSocket } from '../context/SocketContext';
 
 const NavBar = () => {
-  const { user, logout } = useApp();
-  const { notifications } = useSocket();
+  const { user, logout } = useApp() || {};
+  const { notifications = [] } = useSocket() || {};
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/');
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
 
   const toggleMenu = () => {
