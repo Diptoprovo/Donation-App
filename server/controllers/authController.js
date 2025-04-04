@@ -43,7 +43,7 @@ export const registerDonor = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Donor registered successfully',
-            donor: {
+            user: {
                 _id: donor._id,
                 name: donor.name,
                 email: donor.email,
@@ -96,7 +96,7 @@ export const registerReceiver = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Receiver registered successfully',
-            receiver: {
+            user: {
                 _id: receiver._id,
                 name: receiver.name,
                 email: receiver.email,

@@ -65,10 +65,11 @@ export const AppProvider = ({ children }) => {
   const register = async (userData, userType) => {
     try {
       setLoading(true);
-      const response = await api.post(`/auth/register/${userType}`, userData);
-      setUser(response.data);
-      toast.success("Registration successful!");
-      return response.data;
+      const { data } = await api.post(`/auth/register/${userType}`, userData);
+      if (data.success) {
+        setUser(data.user);
+        toast.success("Registration successful!");
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Registration failed";
       setError(errorMessage);
@@ -82,11 +83,13 @@ export const AppProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true);
-      const response = await api.post("/auth/login", credentials);
-      setUser(response.data);
-      toast.success("Login successful!");
-      return response.data;
+      const { data } = await api.post("/auth/login", credentials);
+      if (data.success) {
+        setUser(data.user);
+        toast.success("Login successful!");
+      }
     } catch (err) {
+      console.log("error here bro")
       const errorMessage = err.response?.data?.message || "Login failed";
       setError(errorMessage);
       toast.error(errorMessage);
