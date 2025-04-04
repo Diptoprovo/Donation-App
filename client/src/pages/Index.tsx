@@ -9,19 +9,19 @@ const Index = () => {
       <section className="relative h-screen flex items-center text-center">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
-          <img 
+          <img
             src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?q=80&w=2940&auto=format&fit=crop"
-            alt="People helping each other" 
+            alt="People helping each other"
             className="w-full h-full object-cover"
           />
         </div>
-        
+
         <div className="container mx-auto px-4 md:px-6 relative animate-fade-in">
           <div className="max-w-3xl mx-auto space-y-6 md:space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white text-balance">
               Connect, Share, <span className="text-primary">Make a Difference</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-blue-700  max-w-2xl mx-auto">
               A place where generosity meets need. Donate items you no longer use to those who need them most.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
@@ -34,16 +34,16 @@ const Index = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="absolute bottom-10 left-0 right-0 text-center">
           <div className="animate-bounce inline-block">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
       </section>
-      
+
       {/* How It Works Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 md:px-6">
@@ -53,7 +53,7 @@ const Index = () => {
               KindShare connects donors with recipients in a simple, transparent process. Here's how you can get involved.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
@@ -64,7 +64,7 @@ const Index = () => {
                 Sign up as a donor or recipient to access the platform's features.
               </p>
             </div>
-            
+
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <span className="text-primary text-xl font-bold">2</span>
@@ -74,7 +74,7 @@ const Index = () => {
                 Donors can list items they want to give away, while recipients can browse available items.
               </p>
             </div>
-            
+
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <span className="text-primary text-xl font-bold">3</span>
@@ -87,7 +87,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Featured Items Section */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6">
@@ -97,15 +97,15 @@ const Index = () => {
               Take a look at some of the items that have been recently shared in our community.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm transition-all hover:shadow-md">
                 <div className="aspect-video relative overflow-hidden bg-gray-100">
-                  <img 
-                    src={`https://source.unsplash.com/random/600x400?item=${i}`} 
+                  <img
+                    src={`https://source.unsplash.com/random/600x400?item=${i}`}
                     alt="Donated item"
-                    className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-6">
@@ -120,7 +120,7 @@ const Index = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="text-center mt-12">
             <Button asChild size="lg">
               <Link to="/dashboard">View All Items</Link>
@@ -128,7 +128,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-20 bg-primary">
         <div className="container mx-auto px-4 md:px-6 text-center">
@@ -148,7 +148,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4 md:px-6">
@@ -159,7 +159,7 @@ const Index = () => {
                 Connecting people through meaningful donations and acts of kindness.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
               <div>
                 <h4 className="text-sm font-medium mb-4 uppercase tracking-wider">Platform</h4>
@@ -169,7 +169,7 @@ const Index = () => {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Donate</a></li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-sm font-medium mb-4 uppercase tracking-wider">Company</h4>
                 <ul className="space-y-2">
@@ -178,7 +178,7 @@ const Index = () => {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-sm font-medium mb-4 uppercase tracking-wider">Legal</h4>
                 <ul className="space-y-2">
@@ -189,7 +189,7 @@ const Index = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               &copy; {new Date().getFullYear()} KindShare. All rights reserved.

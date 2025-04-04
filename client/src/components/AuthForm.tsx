@@ -14,33 +14,38 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
+    address: '',
+    phone: '',
     userType: 'donor' // 'donor' or 'recipient'
   });
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleTypeChange = (userType: 'donor' | 'recipient') => {
     setFormData(prev => ({ ...prev, userType }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       // Here you would normally call your authentication service
       // For now, we'll simulate a successful login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
+
       if (type === 'signin') {
+
+
+
         toast({
           title: "Welcome back!",
           description: "You've been successfully signed in.",
@@ -51,7 +56,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           description: "Your account has been created successfully.",
         });
       }
-      
+
       // Navigate to dashboard after authentication
       navigate('/dashboard');
     } catch (error) {
@@ -64,7 +69,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="w-full max-w-md p-8 rounded-2xl bg-white shadow-sm border border-gray-100 animate-fade-in">
       <div className="space-y-2 text-center mb-8">
@@ -72,12 +77,12 @@ const AuthForm = ({ type }: AuthFormProps) => {
           {type === 'signin' ? 'Welcome back' : 'Create an account'}
         </h1>
         <p className="text-muted-foreground text-sm">
-          {type === 'signin' 
-            ? 'Enter your credentials to access your account' 
+          {type === 'signin'
+            ? 'Enter your credentials to access your account'
             : 'Fill in the form below to create your account'}
         </p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-5">
         {type === 'signup' && (
           <div className="space-y-2">
@@ -94,7 +99,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             />
           </div>
         )}
-        
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -108,7 +113,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             className="h-11"
           />
         </div>
-        
+
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
@@ -129,7 +134,35 @@ const AuthForm = ({ type }: AuthFormProps) => {
             className="h-11"
           />
         </div>
-        
+        {type === 'signup' && (
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Input
+              id="address"
+              name="address"
+              type=""
+              placeholder="home"
+              required
+              value={formData.address}
+              onChange={handleChange}
+              className="h-11"
+            />
+          </div>)}
+        {type === 'signup' && (
+          <div className="space-y-2">
+            <Label htmlFor="address">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type=""
+              placeholder="99xxx99xxx"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+              className="h-11"
+            />
+          </div>)}
+
         {type === 'signup' && (
           <div className="space-y-2">
             <Label>I am a</Label>
@@ -153,9 +186,9 @@ const AuthForm = ({ type }: AuthFormProps) => {
             </div>
           </div>
         )}
-        
-        <Button 
-          type="submit" 
+
+        <Button
+          type="submit"
           className="w-full h-11"
           disabled={isLoading}
         >
@@ -166,7 +199,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           ) : type === 'signin' ? 'Sign In' : 'Create Account'}
         </Button>
       </form>
-      
+
       <div className="mt-6 text-center text-sm">
         {type === 'signin' ? (
           <p>
