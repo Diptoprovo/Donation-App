@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import ItemCard from "../components/ItemCard";
 import TransactionCard from "../components/TransactionCard";
+import RequestCard from "../components/RequestCard";
 
 const Dashboard = () => {
   const { user, api, getItems, getTransactions } = useApp();
@@ -310,7 +311,7 @@ const Dashboard = () => {
               )}
             </div>
           )}
-
+          {/* Requests tab */}
           {activeTab === "requests" && user?.type === "donor" && (
             <div>
               <div className="flex justify-between items-center mb-6">
@@ -324,7 +325,7 @@ const Dashboard = () => {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {requests.map((item) => (
-                    <ItemCard key={item._id} item={item} />
+                    <RequestCard key={item._id} item={item} />
                   ))}
                 </div>
               )}
