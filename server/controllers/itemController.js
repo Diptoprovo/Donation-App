@@ -179,12 +179,13 @@ export const updateItem = async (req, res) => {
                 message: 'Access denied. Not the owner of the item'
             });
         }
-
-        // Handle image uploads - expects req.files from multer middleware
-        let imageUrls = [...item.image]; // Keep existing images
+        
+        let imageUrls = [...item.image];
         if (req.files && req.files.length > 0) {
-            const newImageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`);
-            imageUrls = [...imageUrls, ...newImageUrls];
+            imageUrls = [
+                ...imageUrls,
+                ...req.files.map(file => file.path)
+            ];
         }
 
         // Update item

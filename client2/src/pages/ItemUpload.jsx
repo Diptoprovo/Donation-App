@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import axios from 'axios';
 
 const ItemUpload = () => {
   const navigate = useNavigate();
-  const { uploadItem, error, clearError } = useApp();
+  const { error, clearError } = useApp();
   const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
@@ -21,16 +22,11 @@ const ItemUpload = () => {
   
   // Conditions and categories from the backend model
   const conditions = ['new', 'fairly used', 'needs repair'];
-  const categories = ['clothes', 'shoes', 'books', 'electronics', 'accessories', 'other'];
+  const categories = ['clothes', 'shoes', 'books', 'electronics', 'accessories', 'other']
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    
-    // Clear errors when user types
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (error) clearError();
     if (uploadError) setUploadError(null);
   };
@@ -38,11 +34,9 @@ const ItemUpload = () => {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles(selectedFiles);
-    
-    // Generate image previews
+
     const newPreviews = selectedFiles.map(file => URL.createObjectURL(file));
     setPreviews(prev => {
-      // Revoke old preview URLs to avoid memory leaks
       prev.forEach(url => URL.revokeObjectURL(url));
       return newPreviews;
     });
@@ -51,56 +45,57 @@ const ItemUpload = () => {
   const removeFile = (index) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
     setPreviews(prev => {
-      const newPreviews = [...prev];
-      URL.revokeObjectURL(newPreviews[index]);
-      newPreviews.splice(index, 1);
-      return newPreviews;
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index]);
+      updated.splice(index, 1);
+      return updated;
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate form
+
     if (!formData.name || !formData.location) {
       setUploadError('Please fill in all required fields');
       return;
     }
-    
+
     if (files.length === 0) {
       setUploadError('Please upload at least one image');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
-      // Upload item with images
-      await uploadItem({
-        ...formData,
-        image: files
-      });
-      
-      // Redirect to dashboard on success
+
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('condition', formData.condition);
+      data.append('category', formData.category);
+      data.append('location', formData.location);
+      files.forEach(file => data.append('images', file));
+
+      await axios.post('http://localhost:4000/api/item/create-item', data); // -> fix this line for process.env.VITE_SOCKET_URL
+         
       navigate('/dashboard');
     } catch (err) {
-      setUploadError(err.message || 'Failed to upload item');
+      const message = err.response?.data?.message || 'Failed to upload item';
+      setUploadError(message);
       console.error('Upload error:', err);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-6">Donate an Item</h1>
-        
-        {/* Error Message */}
+
         {(error || uploadError) && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <span>{error || uploadError}</span>
-            <button 
+            <button
               className="float-right font-bold"
               onClick={() => {
                 if (error) clearError();
@@ -111,41 +106,31 @@ const ItemUpload = () => {
             </button>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
-          {/* Item Name */}
+          {/* Name */}
           <div className="mb-4">
-            <label 
-              htmlFor="name" 
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Item Name *
-            </label>
+            <label htmlFor="name" className="block text-sm font-bold mb-2">Item Name *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          
-          {/* Item Condition */}
+
+          {/* Condition */}
           <div className="mb-4">
-            <label 
-              htmlFor="condition" 
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Condition *
-            </label>
+            <label htmlFor="condition" className="block text-sm font-bold mb-2">Condition *</label>
             <select
               id="condition"
               name="condition"
               value={formData.condition}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               required
             >
               {conditions.map(condition => (
@@ -155,21 +140,16 @@ const ItemUpload = () => {
               ))}
             </select>
           </div>
-          
-          {/* Item Category */}
+
+          {/* Category */}
           <div className="mb-4">
-            <label 
-              htmlFor="category" 
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Category *
-            </label>
+            <label htmlFor="category" className="block text-sm font-bold mb-2">Category *</label>
             <select
               id="category"
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               required
             >
               {categories.map(category => (
@@ -179,34 +159,25 @@ const ItemUpload = () => {
               ))}
             </select>
           </div>
-          
-          {/* Item Location */}
+
+          {/* Location */}
           <div className="mb-4">
-            <label 
-              htmlFor="location" 
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Location *
-            </label>
+            <label htmlFor="location" className="block text-sm font-bold mb-2">Location *</label>
             <input
               type="text"
               id="location"
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              placeholder="City, State"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          
+
           {/* Image Upload */}
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Upload Images *
-            </label>
-            
-            <div 
+            <label className="block text-sm font-bold mb-2">Upload Images *</label>
+            <div
               className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50"
               onClick={() => fileInputRef.current.click()}
             >
@@ -218,29 +189,18 @@ const ItemUpload = () => {
                 accept="image/*"
                 className="hidden"
               />
-              
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              
-              <p className="mt-1 text-sm text-gray-600">
-                Click to upload or drag and drop
-              </p>
-              <p className="text-xs text-gray-500">
-                PNG, JPG, GIF up to 5MB
-              </p>
+              <p className="mt-1 text-sm text-gray-600">Click to upload or drag and drop</p>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
             </div>
-            
-            {/* Image Previews */}
+
             {previews.length > 0 && (
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {previews.map((preview, index) => (
                   <div key={index} className="relative group">
-                    <img
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
-                      className="h-24 w-full object-cover rounded border"
-                    />
+                    <img src={preview} alt={`Preview ${index + 1}`} className="h-24 w-full object-cover rounded border" />
                     <button
                       type="button"
                       onClick={() => removeFile(index)}
@@ -253,8 +213,8 @@ const ItemUpload = () => {
               </div>
             )}
           </div>
-          
-          {/* Submit Button */}
+
+          {/* Submit */}
           <div className="flex justify-end gap-3">
             <button
               type="button"
@@ -265,8 +225,8 @@ const ItemUpload = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               disabled={isSubmitting}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
               {isSubmitting ? 'Uploading...' : 'Donate Item'}
             </button>
