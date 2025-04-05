@@ -75,6 +75,8 @@ const ItemUpload = () => {
       data.append('condition', formData.condition);
       data.append('category', formData.category);
       data.append('location', user.address);
+      data.append('x', user.x);
+      data.append('y', user.y);
       files.forEach(file => data.append('images', file));
 
       await axios.post('http://localhost:4000/api/item/create-item', data); // -> fix this line for process.env.VITE_SOCKET_URL

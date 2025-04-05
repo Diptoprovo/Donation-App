@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthForm from '../components/AuthForm';
 import { useApp } from '../context/AppContext';
+import MapRender from '../components/MapRender';
 
 const SignUp = () => {
   const { user } = useApp();
@@ -16,6 +17,7 @@ const SignUp = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Left panel with illustration */}
         <div className="bg-blue-600 text-white p-8 md:w-1/2 flex flex-col justify-center">
@@ -39,12 +41,13 @@ const SignUp = () => {
             </Link>
           </div>
         </div>
-        
+
         {/* Right panel with registration form */}
         <div className="p-8 md:w-1/2">
           <AuthForm formType="register" />
         </div>
       </div>
+
     </div>
   );
 };

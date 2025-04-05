@@ -14,6 +14,8 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
 
   // Items state
   const [items, setItems] = useState([]);
@@ -269,6 +271,12 @@ export const AppProvider = ({ children }) => {
     setError(null);
   };
 
+  const setCoords = async (xcoord, ycoord) => {
+    console.log("Setting coords");
+    setX(xcoord);
+    setY(ycoord);
+  }
+
   const value = {
     // Auth
     user,
@@ -279,7 +287,9 @@ export const AppProvider = ({ children }) => {
     logout,
     updateProfile,
     clearError,
-
+    setCoords,
+    x,
+    y,
     // Items
     items,
     getItems,

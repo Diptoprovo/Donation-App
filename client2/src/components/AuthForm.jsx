@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import MapRender from './MapRender';
 
 const AuthForm = ({ formType = 'login' }) => {
   const navigate = useNavigate();
-  const { login, register, error, clearError } = useApp();
+  const { login, register, error, clearError, x, y } = useApp();
   const [userType, setUserType] = useState('donor');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,6 +46,8 @@ const AuthForm = ({ formType = 'login' }) => {
           email: formData.email,
           password: formData.password,
           address: formData.address,
+          x: x,
+          y: y,
           phone: formData.phone
         }, userType);
       }
@@ -146,6 +149,7 @@ const AuthForm = ({ formType = 'login' }) => {
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
+              <MapRender />
             </div>
 
             {/* Phone */}
