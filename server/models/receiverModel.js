@@ -29,6 +29,12 @@ const receiverSchema = new mongoose.Schema({
         ref: 'Request',
         required: true,
     }],
+    x: {
+        type: Number,
+    },
+    y: {
+        type: Number,
+    }
     // verifyOtp: { type: String, default: '' },
     // verifyOtpExpireAt: { type: Number, default: 0 },
     // isAccountVerified: { type: Boolean, default: false },

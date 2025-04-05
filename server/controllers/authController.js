@@ -9,7 +9,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Register a new donor
 export const registerDonor = async (req, res) => {
     try {
-        const { name, email, password, address, phone } = req.body;
+        const { name, email, password, address, phone, x, y } = req.body;
 
         // Check if user already exists
         const existingDonor = await Donor.findOne({ email });
@@ -31,7 +31,9 @@ export const registerDonor = async (req, res) => {
             password: hashedPassword,
             address,
             phone,
-            donationList: []
+            donationList: [],
+            x,
+            y,
         });
 
         // Generate JWT token
@@ -62,7 +64,7 @@ export const registerDonor = async (req, res) => {
 // Register a new receiver
 export const registerReceiver = async (req, res) => {
     try {
-        const { name, email, password, address, phone } = req.body;
+        const { name, email, password, address, phone, x, y } = req.body;
 
         // Check if user already exists
         const existingReceiver = await Receiver.findOne({ email });
@@ -84,7 +86,9 @@ export const registerReceiver = async (req, res) => {
             password: hashedPassword,
             address,
             phone,
-            requestList: []
+            requestList: [],
+            x,
+            y,
         });
 
         // Generate JWT token
@@ -294,7 +298,9 @@ export const getProfile = async (req, res) => {
                 email: user.email,
                 address: user.address,
                 phone: user.phone,
-                type: req.userType
+                type: req.userType,
+                x: user.x,
+                y: user.y,
             }
         });
     } catch (error) {

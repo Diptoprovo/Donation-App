@@ -8,7 +8,7 @@ import { notifyItemMatch, notifyNewItemForRequest } from '../utils/notificationU
 // Create a new donation item [puts in both itemlist and donationlist of donor] [notifying the receivers]
 export const createItem = async (req, res) => {
     try {
-        const { name, condition, category, location } = req.body;
+        const { name, condition, category, location, x, y } = req.body;
         const donorId = req.userId;
 
         // Handle image uploads - expects req.files from multer middleware
@@ -29,7 +29,9 @@ export const createItem = async (req, res) => {
             category,
             location,
             image: imageUrls,
-            donorId
+            donorId,
+            x,
+            y,
         });
 
         // Add item to donor's donation list
@@ -90,7 +92,7 @@ export const createItem = async (req, res) => {
 export const getAllItems = async (req, res) => {
     try {
         // Get all items with available filter
-        const items = await Item.find({isAvailable:true}).populate('donorId', 'name email');
+        const items = await Item.find({ isAvailable: true }).populate('donorId', 'name email');
 
         res.status(200).json({
             success: true,
@@ -114,7 +116,7 @@ export const getItemById = async (req, res) => {
         // Find item by ID and populate donor information
         const item = await Item.findById(itemId).populate('donorId', 'name email phone');
 
-        if (!item||item.isAvailable===false) {
+        if (!item || item.isAvailable === false) {
             return res.status(404).json({
                 success: false,
                 message: 'Item not found'
@@ -179,7 +181,7 @@ export const updateItem = async (req, res) => {
                 message: 'Access denied. Not the owner of the item'
             });
         }
-        
+
         let imageUrls = [...item.image];
         if (req.files && req.files.length > 0) {
             imageUrls = [
@@ -222,7 +224,7 @@ export const deleteItem = async (req, res) => {
         const donorId = req.userId;
 
         const item = await Item.findById(itemId);
-        if (!item||item.isAvailable===false) {
+        if (!item || item.isAvailable === false) {
             return res.status(404).json({
                 success: false,
                 message: 'Item not found'
@@ -259,9 +261,9 @@ export const getAvailableItems = async (req, res) => {
         if (category) filter.category = category;
         if (location) filter.location = location;
         filter.isAvailable = true;
-        
+
         const items = await Item.find(filter).populate('donorId', 'name').sort({ createdAt: -1 });
-        
+
         res.status(200).json({
             success: true,
             count: items.length,

@@ -34,10 +34,16 @@ const itemSchema = new Schema({
         ref: 'Donor',
         required: true
     },
-    isAvailable:{
+    isAvailable: {
         type: Boolean,
         default: true,
         required: false
+    },
+    x: {
+        type: Number,
+    },
+    y: {
+        type: Number,
     }
 });
 
