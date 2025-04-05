@@ -7,11 +7,11 @@ import RequestCard from "../components/RequestCard";
 import ReceiverreqCard from "../components/ReceiverreqCard";
 
 const Dashboard = () => {
-  const { user, api, getItems, getTransactions } = useApp();
+  const { user, api, getItems, getTransactions, transactions } = useApp();
   const [activeTab, setActiveTab] = useState("overview");
   const [myItems, setMyItems] = useState([]);
   const [allItems, setAllItems] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  // const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [requests, setRequests] = useState([]);
@@ -53,6 +53,14 @@ const Dashboard = () => {
     }
   }, [user, api, getTransactions]);
 
+  useEffect(() => {
+    const fetchTr = async () => {
+      await getTransactions();
+    }
+
+    fetchTr();
+  }, [])
+
   // Count items by status
   const itemCounts = {
     total: myItems.length,
@@ -64,7 +72,7 @@ const Dashboard = () => {
   const transactionCounts = {
     total: transactions.length,
     pending: transactions.filter((t) => t.status === "pending").length,
-    accepted: transactions.filter((t) => t.status === "accepted").length,
+    accepted: transactions.filter((t) => t.status === "approved").length,
     completed: transactions.filter((t) => t.status === "completed").length,
     rejected: transactions.filter((t) => t.status === "rejected").length,
   };
@@ -87,11 +95,10 @@ const Dashboard = () => {
         <div className="flex border-b overflow-x-auto">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-              activeTab === "overview"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "overview"
+              ? "border-b-2 border-blue-600 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
           >
             Overview
           </button>
@@ -99,11 +106,10 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("my-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "my-items"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-items"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               My Items
             </button>
@@ -111,11 +117,10 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("all-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "all-items"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "all-items"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               All Items
             </button>
@@ -124,11 +129,10 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("my-requests")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "my-requests"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-requests"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               My Requests
             </button>
@@ -147,11 +151,10 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("requests")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
-                activeTab === "requests"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "requests"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               Requests
             </button>
@@ -231,10 +234,10 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Total Requests</p>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <p className="text-sm text-gray-600">Accepted</p>
                       <p className="text-2xl font-bold">
-                        {myRequests.length}
+                        {transactionCounts.accepted}
                       </p>
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
@@ -243,16 +246,17 @@ const Dashboard = () => {
                         {transactionCounts.pending}
                       </p>
                     </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Accepted</p>
-                      <p className="text-2xl font-bold">
-                        {transactionCounts.accepted}
-                      </p>
-                    </div>
+
                     <div className="bg-purple-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Completed</p>
                       <p className="text-2xl font-bold">
                         {transactionCounts.completed}
+                      </p>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <p className="text-sm text-gray-600">Rejected</p>
+                      <p className="text-2xl font-bold">
+                        {transactionCounts.rejected}
                       </p>
                     </div>
                   </div>
