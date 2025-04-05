@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const ItemCard = ({ item = {} }) => {
@@ -12,12 +12,15 @@ const ItemCard = ({ item = {} }) => {
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? item.image.length - 1 : prev - 1));
   };
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev === item.image.length - 1 ? 0 : prev + 1));
+    console.log(item.image.length);
+
   };
 
   const handleRequestItem = async (e) => {

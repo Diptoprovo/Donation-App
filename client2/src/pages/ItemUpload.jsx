@@ -7,19 +7,19 @@ const ItemUpload = () => {
   const navigate = useNavigate();
   const { error, clearError } = useApp();
   const fileInputRef = useRef(null);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     condition: 'new',
     category: 'clothes',
     location: ''
   });
-  
+
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-  
+
   // Conditions and categories from the backend model
   const conditions = ['new', 'fairly used', 'needs repair'];
   const categories = ['clothes', 'shoes', 'books', 'electronics', 'accessories', 'other']
@@ -33,7 +33,9 @@ const ItemUpload = () => {
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
+    // console.log(files, selectedFiles)
+    // setFiles(selectedFiles);
+    setFiles(prevFiles => [...prevFiles, ...selectedFiles]);
 
     const newPreviews = selectedFiles.map(file => URL.createObjectURL(file));
     setPreviews(prev => {
@@ -76,7 +78,7 @@ const ItemUpload = () => {
       files.forEach(file => data.append('images', file));
 
       await axios.post('http://localhost:4000/api/item/create-item', data); // -> fix this line for process.env.VITE_SOCKET_URL
-         
+
       navigate('/dashboard');
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to upload item';
@@ -86,7 +88,7 @@ const ItemUpload = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white p-6 rounded-lg shadow-md">
