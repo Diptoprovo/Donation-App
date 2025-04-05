@@ -16,6 +16,18 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [requests, setRequests] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  // Categories available in the system
+  const categories = [
+    { id: 'all', name: 'All Items' },
+    { id: 'clothes', name: 'Clothes' },
+    { id: 'shoes', name: 'Shoes' },
+    { id: 'books', name: 'Books' },
+    { id: 'electronics', name: 'Electronics' },
+    { id: 'accessories', name: 'Accessories' },
+    { id: 'other', name: 'Other' }
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -371,13 +383,36 @@ const Dashboard = () => {
                 </Link>
               </div>
 
+              {/* Category filter */}
+              <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
+                <h3 className="text-sm font-medium mb-3 text-gray-700">Filter by Category:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => setActiveCategory(category.id)}
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        activeCategory === category.id
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {allItems.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
                   <p className="text-gray-600 mb-4">No items listed yet.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {allItems.map((item) => (
+                  {(activeCategory === 'all' 
+                    ? allItems 
+                    : allItems.filter(item => item.category === activeCategory)
+                  ).map((item) => (
                     <ItemCard key={item._id} item={item} />
                   ))}
                 </div>

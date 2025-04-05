@@ -1,4 +1,3 @@
-
 import express from "express";
 import 'dotenv/config';
 import { createServer } from "http";  // ✅ Import createServer
@@ -13,6 +12,7 @@ import itemRouter from "./routes/itemRoutes.js";
 import receiverRouter from "./routes/receiverRoutes.js";
 import requestRouter from "./routes/requestRoutes.js";
 import transactionRouter from "./routes/transactionRoutes.js";
+import statsRouter from "./routes/statsRoutes.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -78,6 +78,7 @@ app.use("/api/item", itemRouter);
 app.use("/api/receiver", receiverRouter);
 app.use("/api/request", requestRouter);
 app.use("/api/transaction", transactionRouter);
+app.use("/api/stats", statsRouter);
 
 // ✅ Use httpServer.listen instead of app.listen
 httpServer.listen(port, () => console.log(`Server started on PORT: ${port}`));

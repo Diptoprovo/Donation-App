@@ -4,11 +4,16 @@ import { useApp } from '../context/AppContext';
 import ItemCard from '../components/ItemCard';
 
 const Index = () => {
-    const { getItems } = useApp();
+    const { getItems, api } = useApp();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeCategory, setActiveCategory] = useState('all');
+    const [stats, setStats] = useState({
+        totalDonors: 0,
+        totalReceivers: 0,
+        totalDonations: 0
+    });
 
     const categories = [
         { id: 'all', name: 'All Items' },
@@ -21,21 +26,29 @@ const Index = () => {
     ];
 
     useEffect(() => {
-        // const fetchItems = async () => {
-        //     try {
-        //         setLoading(true);
-        //         const fetchedItems = await getItems();
-        //         setItems(fetchedItems || []);
-        //     } catch (err) {
-        //         setError('Failed to load donation items');
-        //         console.error(err);
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // };
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                // Fetch statistics
+                const { data } = await api.get("/stats");
+                // console.log(data);
+                if (data.success) {
+                    setStats({
+                        totalDonors: data.totalDonors || 0,
+                        totalReceivers: data.totalReceivers || 0,
+                        totalDonations: data.completedTransactions || 0
+                    });
+                }
+            } catch (err) {
+                setError('Failed to load statistics');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // fetchItems();
-    }, []);
+        fetchData();
+    }, [api]);
 
     // Filter items by category
     const filteredItems = activeCategory === 'all'
@@ -60,6 +73,48 @@ const Index = () => {
                         <Link to="/dashboard" className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-md font-bold transition-colors">
                             View Dashboard
                         </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Impact Trackers Section */}
+            <section className="py-12 bg-white">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center mb-10">Our Impact</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Total Donors */}
+                        <div className="bg-blue-50 p-8 rounded-lg shadow-md text-center">
+                            <div className="text-blue-600 text-5xl font-bold mb-2">
+                                {stats.totalDonors}
+                            </div>
+                            <div className="text-xl font-semibold text-gray-800">Generous Donors</div>
+                            <p className="text-gray-600 mt-2">
+                                People helping their community through giving
+                            </p>
+                        </div>
+                        
+                        {/* Total Receivers */}
+                        <div className="bg-green-50 p-8 rounded-lg shadow-md text-center">
+                            <div className="text-green-600 text-5xl font-bold mb-2">
+                                {stats.totalReceivers}
+                            </div>
+                            <div className="text-xl font-semibold text-gray-800">Community Members</div>
+                            <p className="text-gray-600 mt-2">
+                                People receiving support through donations
+                            </p>
+                        </div>
+                        
+                        {/* Total Successful Donations */}
+                        <div className="bg-purple-50 p-8 rounded-lg shadow-md text-center">
+                            <div className="text-purple-600 text-5xl font-bold mb-2">
+                                {stats.totalDonations}
+                            </div>
+                            <div className="text-xl font-semibold text-gray-800">Successful Donations</div>
+                            <p className="text-gray-600 mt-2">
+                                Items that found a new home and purpose
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
