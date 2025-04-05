@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const ItemUpload = () => {
   const navigate = useNavigate();
-  const { error, clearError } = useApp();
+  const { error, clearError, user } = useApp();
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -57,7 +57,7 @@ const ItemUpload = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.location) {
+    if (!formData.name) {
       setUploadError('Please fill in all required fields');
       return;
     }
@@ -74,7 +74,7 @@ const ItemUpload = () => {
       data.append('name', formData.name);
       data.append('condition', formData.condition);
       data.append('category', formData.category);
-      data.append('location', formData.location);
+      data.append('location', user.address);
       files.forEach(file => data.append('images', file));
 
       await axios.post('http://localhost:4000/api/item/create-item', data); // -> fix this line for process.env.VITE_SOCKET_URL
@@ -169,7 +169,9 @@ const ItemUpload = () => {
               type="text"
               id="location"
               name="location"
-              value={formData.location}
+              value={user.address}
+
+              // defaultValue={user.address}
               onChange={handleInputChange}
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               required
