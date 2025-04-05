@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { data } from "react-router-dom";
 
 // Create context
 const AppContext = createContext();
@@ -213,7 +214,7 @@ export const AppProvider = ({ children }) => {
 
   const initiateTranRecv = async (tranData) => {
     try {
-      const { data } = await api.post('/transaction/new', tranData);
+      const { data } = await api.post("/transaction/new", tranData);
       if (data.success) {
         toast.success(error.message);
       } else {
@@ -223,7 +224,7 @@ export const AppProvider = ({ children }) => {
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
 
   // Request functions
   const createRequest = async (requestData) => {
@@ -242,7 +243,27 @@ export const AppProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
+  const deleteRequest = async (requestData) => {
+    try {
+      setLoading(true);
+      const a = await { requestId: requestData };
+      console.log(a);
+      const { requestId } = a;
+      console.log(requestId);
+      const r = { data: a };
+      const response = await api.delete("/request/delete-request", r);
+      toast.success("Request deleted successfully");
+      return response.data;
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Request deletion failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   // Clear errors
   const clearError = () => {
     setError(null);
@@ -271,7 +292,7 @@ export const AppProvider = ({ children }) => {
 
     // Requests
     createRequest,
-
+    deleteRequest,
     // Utility
     api,
   };

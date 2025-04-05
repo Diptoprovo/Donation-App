@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 import ItemCard from "../components/ItemCard";
 import TransactionCard from "../components/TransactionCard";
 import RequestCard from "../components/RequestCard";
+import ReceiverreqCard from "../components/ReceiverreqCard";
 
 const Dashboard = () => {
   const { user, api, getItems, getTransactions } = useApp();
@@ -86,10 +87,11 @@ const Dashboard = () => {
         <div className="flex border-b overflow-x-auto">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "overview"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-              }`}
+            className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+              activeTab === "overview"
+                ? "border-b-2 border-blue-600 text-blue-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
           >
             Overview
           </button>
@@ -97,10 +99,11 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("my-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-items"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-                }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "my-items"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               My Items
             </button>
@@ -108,10 +111,11 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("all-items")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "all-items"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-                }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "all-items"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               All Items
             </button>
@@ -120,10 +124,11 @@ const Dashboard = () => {
           {user?.type === "receiver" && (
             <button
               onClick={() => setActiveTab("my-requests")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "my-requests"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-                }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "my-requests"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               My Requests
             </button>
@@ -142,10 +147,11 @@ const Dashboard = () => {
           {user?.type === "donor" && (
             <button
               onClick={() => setActiveTab("requests")}
-              className={`px-6 py-3 font-medium text-sm focus:outline-none ${activeTab === "requests"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-                }`}
+              className={`px-6 py-3 font-medium text-sm focus:outline-none ${
+                activeTab === "requests"
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               Requests
             </button>
@@ -390,12 +396,14 @@ const Dashboard = () => {
 
               {myRequests.length === 0 ? (
                 <div className="bg-white p-6 rounded-lg shadow text-center">
-                  <p className="text-gray-600 mb-4">You haven't made any requests yet.</p>
+                  <p className="text-gray-600 mb-4">
+                    You haven't made any requests yet.
+                  </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mx-2">
                   {myRequests.map((request) => (
-                    <RequestCard key={request._id} item={request} />
+                    <ReceiverreqCard key={request._id} item={request} />
                   ))}
                 </div>
               )}

@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { io } from 'socket.io-client';
-import AppContext, { useApp } from './AppContext';
+import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
+import AppContext, { useApp } from "./AppContext";
 
 const SocketContext = createContext();
 
@@ -14,13 +14,14 @@ export const SocketProvider = ({ children }) => {
 
   // Setup socket connection
   useEffect(() => {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
-    
+    const SOCKET_URL =
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:4000";
+
     // Only create a new socket if one doesn't exist already
     if (!socketRef.current) {
       try {
         const socketInstance = io(SOCKET_URL, {
-          withCredentials: true, 
+          withCredentials: true,
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
           reconnectionDelayMax: 5000,
@@ -29,23 +30,23 @@ export const SocketProvider = ({ children }) => {
 
         socketRef.current = socketInstance;
 
-        socketInstance.on('connect', () => {
-          console.log('Socket connected');
+        socketInstance.on("connect", () => {
+          console.log("Socket connected");
           setConnected(true);
         });
 
-        socketInstance.on('disconnect', () => {
-          console.log('Socket disconnected');
+        socketInstance.on("disconnect", () => {
+          console.log("Socket disconnected");
           setConnected(false);
         });
 
-        socketInstance.on('connect_error', (err) => {
-          console.error('Socket connection error:', err.message);
+        socketInstance.on("connect_error", (err) => {
+          console.error("Socket connection error:", err.message);
         });
 
         setSocket(socketInstance);
       } catch (err) {
-        console.error('Failed to connect to socket:', err);
+        console.error("Failed to connect to socket:", err);
       }
     }
 
@@ -61,17 +62,17 @@ export const SocketProvider = ({ children }) => {
   // Join user's room when authenticated
   useEffect(() => {
     if (socketRef.current && connected && user?._id) {
-      socketRef.current.emit('join', user._id);
+      socketRef.current.emit("join", user._id);
 
       // Listen for notifications
-      socketRef.current.on('notification', (notification) => {
-        setNotifications(prev => [notification, ...prev]);
+      socketRef.current.on("notification", (notification) => {
+        setNotifications((prev) => [notification, ...prev]);
       });
 
       // Cleanup event listeners on unmount or user change
       return () => {
         if (socketRef.current) {
-          socketRef.current.off('notification');
+          socketRef.current.off("notification");
         }
       };
     }
@@ -79,7 +80,9 @@ export const SocketProvider = ({ children }) => {
 
   // Clear notification
   const clearNotification = (id) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id)
+    );
   };
 
   // Clear all notifications
@@ -92,13 +95,11 @@ export const SocketProvider = ({ children }) => {
     notifications,
     connected,
     clearNotification,
-    clearAllNotifications
+    clearAllNotifications,
   };
 
   return (
-    <SocketContext.Provider value={value}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 };
 
@@ -110,4 +111,4 @@ export const useSocket = () => {
   return context;
 };
 
-export default SocketContext; 
+export default SocketContext;
