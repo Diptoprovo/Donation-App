@@ -234,7 +234,7 @@ const Dashboard = () => {
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <p className="text-sm text-gray-600">Total Requests</p>
                       <p className="text-2xl font-bold">
-                        {transactionCounts.total}
+                        {myRequests.length}
                       </p>
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
