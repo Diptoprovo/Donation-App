@@ -90,7 +90,7 @@ export const AppProvider = ({ children }) => {
         toast.success("Login successful!");
       }
     } catch (err) {
-      console.log("error here bro")
+      console.log("error here bro");
       const errorMessage = err.response?.data?.message || "Login failed";
       setError(errorMessage);
       toast.error(errorMessage);
