@@ -299,8 +299,8 @@ export const getProfile = async (req, res) => {
                 address: user.address,
                 phone: user.phone,
                 type: req.userType,
-                x: user.x,
-                y: user.y,
+                x: user.x || 0,
+                y: user.y || 0,
             }
         });
     } catch (error) {

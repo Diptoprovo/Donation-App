@@ -73,6 +73,18 @@ const Dashboard = () => {
     fetchTr();
   }, [])
 
+  const fetchAllItems = async () => {
+    const { data } = await api.get("/item");
+    setAllItems(data.items);
+    console.log(data.items);
+  }
+  useEffect(() => {
+    if (user?.type === "receiver") {
+      
+      fetchAllItems();
+    }
+  }, []);
+
   // Count items by status
   const itemCounts = {
     total: myItems.length,
@@ -87,6 +99,42 @@ const Dashboard = () => {
     accepted: transactions.filter((t) => t.status === "approved").length,
     completed: transactions.filter((t) => t.status === "completed").length,
     rejected: transactions.filter((t) => t.status === "rejected").length,
+  };
+
+  // const sortByDistance = () => {
+  //   const sortedItems = [...allItems].sort((a, b) => {
+  //     const distanceA = a.distance;
+  //     const distanceB = b.distance;
+  //     return distanceA - distanceB;
+  //   });
+  //   setAllItems(sortedItems);
+  // };
+
+  const sortByDistance = () => {
+    if (!user?.x || !user?.y) {
+      console.error("User coordinates not available");
+      return;
+    }
+
+    const sortedItems = [...allItems].sort((a, b) => {
+      // Check if items have coordinates
+      if (!a.x || !a.y || !b.x || !b.y) {
+        console.error("Item coordinates missing");
+        return 0;
+      }
+
+      // Calculate distances using the Euclidean distance formula
+      const distanceA = Math.sqrt(
+        Math.pow(a.x - user.x, 2) + Math.pow(a.y - user.y, 2)
+      );
+      const distanceB = Math.sqrt(
+        Math.pow(b.x - user.x, 2) + Math.pow(b.y - user.y, 2)
+      );
+
+      return distanceA - distanceB;
+    });
+
+    setAllItems(sortedItems);
   };
 
   return (
@@ -386,20 +434,40 @@ const Dashboard = () => {
               {/* Category filter */}
               <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
                 <h3 className="text-sm font-medium mb-3 text-gray-700">Filter by Category:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map(category => (
-                    <button
-                      key={category.id}
-                      onClick={() => setActiveCategory(category.id)}
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        activeCategory === category.id
+                <div className="flex flex-wrap gap-2 justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <button
+                        key={category.id}
+                        onClick={() => setActiveCategory(category.id)}
+                        className={`px-3 py-1 rounded-full text-sm ${activeCategory === category.id
                           ? 'bg-blue-600 text-white'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
+                          }`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+
+                    <button
+
+                      onClick={() => sortByDistance()}
+                      className={`px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-700 hover:bg-gray-300`}
                     >
-                      {category.name}
+                      Closest to Farthest
                     </button>
-                  ))}
+                    <button
+
+                      onClick={() => fetchAllItems()}
+                      className={`px-3 py-1 rounded-full text-sm bg-gray-200 text-gray-700 hover:bg-gray-300`}
+                    >
+                      X
+                    </button>
+                  </div>
+
                 </div>
               </div>
 
@@ -409,8 +477,8 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {(activeCategory === 'all' 
-                    ? allItems 
+                  {(activeCategory === 'all'
+                    ? allItems
                     : allItems.filter(item => item.category === activeCategory)
                   ).map((item) => (
                     <ItemCard key={item._id} item={item} />

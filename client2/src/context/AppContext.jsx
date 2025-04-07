@@ -218,9 +218,9 @@ export const AppProvider = ({ children }) => {
     try {
       const { data } = await api.post("/transaction/new", tranData);
       if (data.success) {
-        toast.success(error.message);
+        toast.success(data.message);
       } else {
-        toast.error(error.message);
+        toast.error(data.message);
       }
       return data.success;
     } catch (error) {

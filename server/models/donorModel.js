@@ -31,9 +31,11 @@ const donorSchema = new mongoose.Schema({
     }],
     x: {
         type: Number,
+        required: true,
     },
     y: {
         type: Number,
+        required: true,
     }
     // verifyOtp: { type: String, default: '' },
     // verifyOtpExpireAt: { type: Number, default: 0 },

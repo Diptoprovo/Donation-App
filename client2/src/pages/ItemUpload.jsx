@@ -172,7 +172,7 @@ const ItemUpload = () => {
               id="location"
               name="location"
               value={user.address}
-
+              disabled
               // defaultValue={user.address}
               onChange={handleInputChange}
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
