@@ -72,7 +72,7 @@ const Index = () => {
                         <Link to="/signup" className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-md font-bold transition-colors">
                             Get Started
                         </Link>
-                        <Link to="/dashboard" className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-md font-bold transition-colors">
+                        <Link to="/" className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-md font-bold transition-colors">
                             View Dashboard
                         </Link>
                     </div>
@@ -121,7 +121,15 @@ const Index = () => {
                 </div>
             </section>
 
+            <section className="py-12 bg-white">
+                <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-10">People who have joined us on this journey</h2>
+                <div className="rounded-lg shadow-lg text-center">
+
             <AllStatsMapRender/>
+                </div>
+                    </div>
+                    </section>
 
             {/* Available Items Section */}
             {/* <section className="py-12">
