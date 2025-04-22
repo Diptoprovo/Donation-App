@@ -5,6 +5,7 @@ import ItemCard from "../components/ItemCard";
 import TransactionCard from "../components/TransactionCard";
 import RequestCard from "../components/RequestCard";
 import ReceiverreqCard from "../components/ReceiverreqCard";
+import L from 'leaflet';
 
 const Dashboard = () => {
   const { user, api, getItems, getTransactions, transactions } = useApp();
@@ -118,19 +119,20 @@ const Dashboard = () => {
 
     const sortedItems = [...allItems].sort((a, b) => {
       // Check if items have coordinates
-      if (!a.x || !a.y || !b.x || !b.y) {
+      if (a.x == null || a.y == null || b.x == null || b.y == null) {
         console.error("Item coordinates missing");
         return 0;
       }
 
       // Calculate distances using the Euclidean distance formula
-      const distanceA = Math.sqrt(
-        Math.pow(a.x - user.x, 2) + Math.pow(a.y - user.y, 2)
-      );
-      const distanceB = Math.sqrt(
-        Math.pow(b.x - user.x, 2) + Math.pow(b.y - user.y, 2)
-      );
-
+      // const distanceA = Math.sqrt(
+      //   Math.pow(a.x - user.x, 2) + Math.pow(a.y - user.y, 2)
+      // );
+      const distanceA = L.latLng(user.x, user.y).distanceTo(L.latLng(a.x, a.y));
+      const distanceB = L.latLng(user.x, user.y).distanceTo(L.latLng(b.x, b.y));
+      // const distanceB = Math.sqrt(
+      //   Math.pow(b.x - user.x, 2) + Math.pow(b.y - user.y, 2)
+      // );
       return distanceA - distanceB;
     });
 

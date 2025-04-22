@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import L from 'leaflet';
 
 const ItemCard = ({ item = {} }) => {
   if (!item || typeof item !== 'object') {
@@ -117,6 +118,15 @@ const ItemCard = ({ item = {} }) => {
 
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Location:</span> {item.location || 'Not specified'}
+        </p>
+        <p className="text-sm text-gray-600 mt-2">
+          <span className="font-medium">Donated by:</span> {item.donorId.name || 'Not specified'}
+        </p>
+        <p className="text-sm text-gray-600 mt-2">
+          <span className="font-medium">Email:</span> {item.donorId.email || 'Not specified'}
+        </p>
+        <p className="text-sm text-gray-600 mt-2">
+          <span className="font-medium">Distance:</span> {`${Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)} km` || 'Not specified'}
         </p>
 
         {item.createdAt && (
