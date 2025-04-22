@@ -89,6 +89,7 @@ export const AppProvider = ({ children }) => {
       const { data } = await api.post("/auth/login", credentials);
       if (data.success) {
         setUser(data.user);
+        console.log(data.user);
         toast.success("Login successful!");
       }
     } catch (err) {

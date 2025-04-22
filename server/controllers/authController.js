@@ -49,7 +49,10 @@ export const registerDonor = async (req, res) => {
                 _id: donor._id,
                 name: donor.name,
                 email: donor.email,
-                type: 'donor'
+                type: 'donor',
+                address: donor.address,
+                x: donor.x || 0,
+                y: donor.y || 0,
             }
         });
     } catch (error) {
@@ -104,7 +107,10 @@ export const registerReceiver = async (req, res) => {
                 _id: receiver._id,
                 name: receiver.name,
                 email: receiver.email,
-                type: 'receiver'
+                type: 'receiver',
+                address: receiver.address,
+                x: receiver.x || 0,
+                y: receiver.y || 0,
             }
         });
     } catch (error) {
@@ -166,7 +172,10 @@ export const login = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                type: userType
+                type: userType,
+                address: user.address,
+                x: user.x || 0,
+                y: user.y || 0,
             }
         });
     } catch (error) {

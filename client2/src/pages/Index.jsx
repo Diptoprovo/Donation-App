@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import ItemCard from '../components/ItemCard';
 import MapRender from '../components/MapRender';
+import AllStatsMapRender from '../components/AllStatsMapRender';
 
 const Index = () => {
     const { getItems, api } = useApp();
@@ -119,6 +120,8 @@ const Index = () => {
                     </div>
                 </div>
             </section>
+
+            <AllStatsMapRender/>
 
             {/* Available Items Section */}
             {/* <section className="py-12">

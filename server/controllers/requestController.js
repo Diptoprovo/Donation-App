@@ -58,7 +58,8 @@ export const getAllRequests = async (req, res) => {
   try {
     const requests = await Request.find().populate(
       "receiverId",
-      "message category"
+      "name email address phone"
+      // "message category"
     );
     const donorId = req.userId;
     if (!donorId) {
