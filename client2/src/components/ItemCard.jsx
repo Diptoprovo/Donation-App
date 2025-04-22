@@ -12,6 +12,8 @@ const ItemCard = ({ item = {} }) => {
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [deliveryOption, setDeliveryOption] = useState('cod');
+
 
 
   const prevSlide = () => {
@@ -30,12 +32,26 @@ const ItemCard = ({ item = {} }) => {
 
     try {
       setIsRequesting(true);
-      await initiateTranRecv({
-        itemId: item._id,
-        donorId: item.donorId._id
-      });
-      setShowModal(false);
-      setMessage('');
+        if(deliveryOption != 'cod'){
+          
+        let temp_amount = Math.round((Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*0.5)/100); // 0.5 paise per km
+        await initiateTranRecv({
+          itemId: item._id,
+          donorId: item.donorId._id,
+          amount: temp_amount
+        });
+        setShowModal(false);
+        setMessage('');
+
+      }else{
+
+        await initiateTranRecv({
+          itemId: item._id,
+          donorId: item.donorId._id
+        });
+        setShowModal(false);
+        setMessage('');
+      }
       // Display success message
     } catch (error) {
       console.error('Error requesting item:', error);
@@ -172,45 +188,61 @@ const ItemCard = ({ item = {} }) => {
 
       {/* Request Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-semibold mb-4">Request Item: {item.name}</h3>
-
-            <form onSubmit={handleRequestItem}>
-              <div className="mb-4">
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                  Are you sure you want to request this item?
-                </label>
-                {/* <textarea
-                  id="message"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="4"
-                  placeholder="Explain why you need this item..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                ></textarea> */}
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={toggleModal}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  disabled={isRequesting}
-                >
-                  {isRequesting ? 'Sending...' : 'Send Request'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+       <div className="bg-white rounded-lg max-w-md w-full p-6">
+         <h3 className="text-xl font-semibold mb-4">Request Item: {item.name}</h3>
+     
+         <form onSubmit={handleRequestItem}>
+           {/* Delivery Option Toggle */}
+           <div className="mb-4">
+             <label className="block text-sm font-medium text-gray-700 mb-1">
+               Choose Delivery Method:
+             </label>
+             <div className="flex items-center space-x-4">
+               <label className="flex items-center">
+                 <input
+                   type="radio"
+                   name="deliveryOption"
+                   value="cod"
+                   checked={deliveryOption === 'cod'}
+                   onChange={(e) => setDeliveryOption(e.target.value)}
+                   className="mr-2"
+                 />
+                 Cash On Delivery, amount= {Math.round((Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*0.5)/100) || 0} Rs
+               </label>
+               <label className="flex items-center">
+                 <input
+                   type="radio"
+                   name="deliveryOption"
+                   value="pickup"
+                   checked={deliveryOption === 'pickup'}
+                   onChange={(e) => setDeliveryOption(e.target.value)}
+                   className="mr-2"
+                 />
+                 Own Pick Up
+               </label>
+             </div>
+           </div>     
+           <div className="flex justify-end space-x-3">
+             <button
+               type="button"
+               onClick={toggleModal}
+               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+             >
+               Cancel
+             </button>
+             <button
+               type="submit"
+               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+               disabled={isRequesting}
+             >
+               {isRequesting ? 'Sending...' : 'Send Request'}
+             </button>
+           </div>
+         </form>
+       </div>
+     </div>
+     
       )}
     </div>
   );
