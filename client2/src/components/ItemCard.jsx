@@ -34,7 +34,7 @@ const ItemCard = ({ item = {} }) => {
       setIsRequesting(true);
         if(deliveryOption === 'cod'){
 
-        let temp_amount = Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*7; // 0.5 paise per km
+        let temp_amount = Math.max(30, Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*5); // 0.5 paise per km
         await initiateTranRecv({
           itemId: item._id,
           donorId: item.donorId._id,
@@ -211,7 +211,7 @@ const ItemCard = ({ item = {} }) => {
                    onChange={(e) => setDeliveryOption(e.target.value)}
                    className="mr-2"
                  />
-                 Cash On Delivery, amount= {Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*7 || 0} Rs
+                 Cash On Delivery, amount= {Math.max(30, Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*5) || 0} Rs
                </label>
                <label className="flex items-center">
                  <input
