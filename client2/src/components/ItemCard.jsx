@@ -135,15 +135,18 @@ const ItemCard = ({ item = {} }) => {
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Location:</span> {item.location || 'Not specified'}
         </p>
+        {!isDonor && (
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Donated by:</span> {item.donorId.name || 'Not specified'}
-        </p>
+        </p>)}
+        {!isDonor && (
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Email:</span> {item.donorId.email || 'Not specified'}
-        </p>
+        </p>)}
+        {!isDonor && (
         <p className="text-sm text-gray-600 mt-2">
           <span className="font-medium">Distance:</span> {`${Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)} km` || 'Not specified'}
-        </p>
+        </p>)}
 
         {item.createdAt && (
           <p className="text-xs text-gray-500 mt-1">
