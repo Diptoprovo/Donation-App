@@ -65,7 +65,7 @@ import Request from '../models/requestModel.js';
 
 export const initiateTransaction = async (req, res) => {
     try {
-        const { donorId, itemId } = req.body;
+        const { donorId, itemId, amount } = req.body;
         const receiverId = req.userId;
 
         //check if item exists
@@ -83,15 +83,27 @@ export const initiateTransaction = async (req, res) => {
                 message: 'Access denied. Not the owner of the item'
             });
         }
-
-        const transaction = await Transaction.create({
-            donorId,
-            receiverId: receiverId,
-            itemId,
-            requestDate: new Date(),
-            deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 days
-            status: 'pending'
-        });
+        var transaction;
+        if(amount){            
+            transaction = await Transaction.create({
+                    donorId,
+                    receiverId: receiverId,
+                    itemId,
+                    requestDate: new Date(),
+                    deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 days
+                    status: 'pending',
+                    amount: amount
+                });
+        }else{
+            transaction = await Transaction.create({
+                donorId,
+                receiverId: receiverId,
+                itemId,
+                requestDate: new Date(),
+                deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 days
+                status: 'pending'
+            });
+        }
 
         const donor = await Donor.findById(donorId);
         const receiver = await Receiver.findById(receiverId);

@@ -36,6 +36,11 @@ const transactionSchema = new Schema({
         enum: ['approved', 'pending', 'on the way', 'delivered', 'rejected'],
         required: true,
         default: 'pending'
+    },
+    amount :{
+        type :Number,
+        default: 0,
+        required: false
     }
 }, { timestamps: true });
 
