@@ -105,6 +105,9 @@ const TransactionCard = ({ transaction = {}, onApprove }) => {
             <p className="text-sm text-gray-600">
               <span className="font-medium">Location:</span> {transaction.itemId.location || 'Not specified'}
             </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">Amount:</span> {transaction.amount || 'Not specified'}
+            </p>
             {!isDonor && (
             <p className="text-sm text-gray-600">
               <span className="font-medium">Email:</span> {transaction.donorId.email || 'Not specified'}
