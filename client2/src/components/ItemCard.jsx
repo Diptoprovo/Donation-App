@@ -32,8 +32,8 @@ const ItemCard = ({ item = {} }) => {
 
     try {
       setIsRequesting(true);
-        if(deliveryOption != 'cod'){
-          
+        if(deliveryOption === 'cod'){
+
         let temp_amount = Math.round((Math.round(L.latLng(user.x, user.y).distanceTo(L.latLng(item.x, item.y))/1000)*0.5)/100); // 0.5 paise per km
         await initiateTranRecv({
           itemId: item._id,
